@@ -51,6 +51,11 @@ function readPostInput(formData: FormData): PostInput {
     cover_image: String(formData.get("cover_image") ?? "").trim() || null,
     featured: formData.get("featured") === "on",
     published: formData.get("published") === "on",
+    author_name: String(formData.get("author_name") ?? "").trim() || null,
+    author_role: String(formData.get("author_role") ?? "").trim() || null,
+    reviewed_by: String(formData.get("reviewed_by") ?? "").trim() || null,
+    reviewed_role:
+      String(formData.get("reviewed_role") ?? "").trim() || null,
   };
 }
 

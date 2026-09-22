@@ -15,6 +15,10 @@ export type Post = {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  author_name: string | null;
+  author_role: string | null;
+  reviewed_by: string | null;
+  reviewed_role: string | null;
 };
 
 export type PostInput = {
@@ -27,6 +31,10 @@ export type PostInput = {
   cover_image?: string | null;
   featured: boolean;
   published: boolean;
+  author_name?: string | null;
+  author_role?: string | null;
+  reviewed_by?: string | null;
+  reviewed_role?: string | null;
 };
 
 export function estimateReadMinutes(content: string): number {
@@ -58,6 +66,38 @@ export async function getFeaturedPost(): Promise<Post | null> {
     .maybeSingle();
 
   if (error) throw error;
+  return data;
+}
+
+export async function getRelatedPosts(
+  category: string,
+  excludeId: string,
+): Promise<Post[]> {
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("published", true)
+    .eq("category", category)
+    .neq("id", excludeId)
+    .order("published_at", { ascending: false })
+    .limit(3);
+
+  if (error) throw error;
+
+  if (!data || data.length < 3) {
+    const { data: fallback, error: fallbackError } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("published", true)
+      .neq("id", excludeId)
+      .order("published_at", { ascending: false })
+      .limit(3);
+
+    if (fallbackError) throw fallbackError;
+    return fallback ?? [];
+  }
+
   return data;
 }
 

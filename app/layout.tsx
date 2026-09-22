@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Manrope, DM_Sans } from "next/font/google";
+import { Fraunces, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { siteConfig } from "@/lib/site-config";
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
+  style: ["normal", "italic"],
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin"],
 });
 
@@ -19,15 +21,15 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "GF Equoterapia — Cuidado que aproxima",
-    template: "%s | GF Equoterapia",
+    default: `${siteConfig.name} — Equoterapia em ${siteConfig.city}`,
+    template: `%s | ${siteConfig.name}`,
   },
   description:
-    "Entre o carinho, a natureza e a presença do cavalo, um espaço para acolher cada criança e respeitar seu tempo.",
+    "Equoterapia com equipe multiprofissional, em um ambiente acolhedor, para crianças, jovens e adultos.",
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    siteName: "GF Equoterapia",
+    siteName: siteConfig.name,
   },
 };
 
@@ -35,18 +37,28 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${manrope.variable} ${dmSans.variable}`}>
-      <body className="min-h-screen flex flex-col bg-paper text-ink font-sans antialiased">
+    <html
+      lang="pt-BR"
+      className={`${fraunces.variable} ${sourceSans.variable}`}
+    >
+      <body className="min-h-screen flex flex-col bg-areia text-tinta font-sans antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "GF Equoterapia",
+              "@type": "MedicalBusiness",
+              name: siteConfig.name,
               description:
-                "Espaço de equoterapia dedicado ao acolhimento, vínculo e respeito ao tempo de cada criança.",
+                "Centro de equoterapia com equipe multiprofissional, dedicado ao desenvolvimento e bem-estar de crianças, jovens e adultos.",
               url: siteUrl,
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: siteConfig.address,
+                addressLocality: siteConfig.city,
+              },
+              telephone: siteConfig.whatsappDisplay,
+              email: siteConfig.email,
             }),
           }}
         />

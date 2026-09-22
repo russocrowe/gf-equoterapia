@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import PostCard from "@/components/PostCard";
+import BlogFilters from "@/components/blog/BlogFilters";
+import NewsletterForm from "@/components/NewsletterForm";
 import { getFeaturedPost, getPublishedPosts } from "@/lib/posts";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Um espaço para conversar sobre cuidado, infância e o vínculo que construímos ao caminhar juntos.",
+    "Artigos claros e revisados pela nossa equipe sobre equoterapia, condições tratadas, desenvolvimento e o dia a dia do centro.",
 };
 
 export default async function BlogPage() {
@@ -23,55 +24,68 @@ export default async function BlogPage() {
 
   return (
     <div>
-      <section className="mx-auto max-w-6xl px-6 pt-16 pb-8">
-        <span className="mb-4 inline-block border-t border-ink/40 pt-3 font-display text-xs font-semibold uppercase tracking-widest text-muted">
-          Blog GF Equoterapia
-        </span>
-        <h1 className="max-w-2xl font-display text-4xl font-semibold leading-tight sm:text-5xl">
-          Histórias, encontros
-          <br />e novos olhares.
-        </h1>
-        <p className="mt-6 max-w-xl text-base text-muted">
-          Um espaço para conversar sobre cuidado, infância e o vínculo que
-          construímos ao caminhar juntos.
-        </p>
+      <section className="bg-azul-claro">
+        <div className="mx-auto max-w-6xl px-6 pt-12 pb-10">
+          <span className="text-xs text-tinta/50">Início › Blog</span>
+          <h1 className="mt-4 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+            Blog de Equoterapia
+          </h1>
+          <p className="mt-4 max-w-xl text-sm text-tinta/70">
+            Artigos claros e revisados pela nossa equipe sobre equoterapia,
+            condições tratadas, desenvolvimento e o dia a dia do centro.
+          </p>
+        </div>
       </section>
 
       {featured && (
-        <section className="mx-auto max-w-6xl px-6 py-8">
-          <div className="rounded-3xl bg-lime/40 px-8 py-10 sm:px-12">
-            <span className="font-display text-xs font-semibold uppercase tracking-widest text-muted">
-              Leitura em destaque · {featured.category}
-            </span>
-            <h2 className="mt-3 max-w-xl font-display text-2xl font-semibold sm:text-3xl">
-              {featured.title}
-            </h2>
-            <p className="mt-3 max-w-lg text-sm text-muted">
-              {featured.excerpt}
-            </p>
-            <Link
-              href={`/blog/${featured.slug}`}
-              className="mt-5 inline-flex font-display text-sm font-semibold underline decoration-2 underline-offset-4"
-            >
-              Ler artigo ↗
-            </Link>
+        <section className="mx-auto max-w-6xl px-6 py-10">
+          <div className="rounded-3xl bg-white p-2 shadow-sm ring-1 ring-tinta/10 sm:p-3">
+            <div className="rounded-2xl bg-marrom-claro/50 px-6 py-8 sm:px-10">
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full bg-azul px-3 py-1 font-display text-xs font-semibold text-white">
+                  Em destaque
+                </span>
+                <span className="rounded-full bg-marrom-claro px-3 py-1 font-display text-xs font-semibold text-marrom">
+                  {featured.category}
+                </span>
+              </div>
+              <h2 className="mt-4 max-w-xl font-display text-2xl font-semibold leading-snug sm:text-3xl">
+                {featured.title}
+              </h2>
+              <p className="mt-3 max-w-lg text-sm text-tinta/70">
+                {featured.excerpt}
+              </p>
+              <Link
+                href={`/blog/${featured.slug}`}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-azul px-6 py-3 font-display text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              >
+                Ler artigo →
+              </Link>
+            </div>
           </div>
         </section>
       )}
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="border-b border-ink/10 pb-6 font-display text-xl font-semibold">
-          Para ler com calma
-        </h2>
-        <div className="flex flex-col">
-          {restPosts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-          {restPosts.length === 0 && (
-            <p className="py-8 text-sm text-muted">
-              Novos artigos em breve.
-            </p>
-          )}
+      <section className="mx-auto max-w-6xl px-6 py-8">
+        <BlogFilters posts={restPosts} />
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-10">
+        <div className="rounded-3xl bg-marrom px-8 py-10 text-white sm:px-12">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-display text-2xl font-semibold">
+                Receba novos artigos por e-mail
+              </h2>
+              <p className="mt-2 max-w-md text-sm text-white/80">
+                Um e-mail por mês com os conteúdos mais úteis para famílias e
+                profissionais. Sem spam.
+              </p>
+            </div>
+            <div className="w-full sm:max-w-xs">
+              <NewsletterForm />
+            </div>
+          </div>
         </div>
       </section>
     </div>

@@ -107,6 +107,45 @@ export default function PostForm({
         </label>
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <label className="flex flex-col gap-1 text-sm">
+          Autor(a)
+          <input
+            name="author_name"
+            defaultValue={post?.author_name ?? ""}
+            placeholder="Nome"
+            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          Profissão do autor(a)
+          <input
+            name="author_role"
+            defaultValue={post?.author_role ?? ""}
+            placeholder="Ex: Fisioterapeuta"
+            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          Revisado por
+          <input
+            name="reviewed_by"
+            defaultValue={post?.reviewed_by ?? ""}
+            placeholder="Nome"
+            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          Profissão do revisor
+          <input
+            name="reviewed_role"
+            defaultValue={post?.reviewed_role ?? ""}
+            placeholder="Ex: Psicóloga"
+            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+          />
+        </label>
+      </div>
+
       <label className="flex flex-col gap-1 text-sm">
         Resumo (aparece na listagem)
         <textarea
