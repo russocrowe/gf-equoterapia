@@ -110,10 +110,11 @@ $$;
 
 grant execute on function public.is_admin() to anon, authenticated;
 
--- Contas que já existem (hoje só a do responsável pelo site) viram admin.
-insert into public.user_roles (user_id, role)
-select id, 'admin' from auth.users
-on conflict do nothing;
+-- Ninguém vira admin automaticamente: este banco pode ter outras contas.
+-- Para dar acesso ao painel, rode (trocando o e-mail):
+--   insert into public.user_roles (user_id, role)
+--   select id, 'admin' from auth.users where lower(email) = 'pessoa@exemplo.com'
+--   on conflict do nothing;
 
 -- ---------------------------------------------------------------------------
 -- Fecha a brecha: só admin escreve em matérias e imagens de capa
