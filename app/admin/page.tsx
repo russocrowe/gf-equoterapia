@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireAdminPage } from "@/lib/auth";
+import { hasMfa, requireAdminPage } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 import { getSiteHealth, type HealthTask } from "@/lib/site-health";
 import { createClient } from "@/lib/supabase/server";
@@ -72,7 +72,7 @@ export default async function AdminOverviewPage() {
   const supabase = await createClient();
 
   const [health, profile] = await Promise.all([
-    getSiteHealth(),
+    getSiteHealth({ mfaEnabled: hasMfa(user) }),
     supabase
       .from("profiles")
       .select("full_name")

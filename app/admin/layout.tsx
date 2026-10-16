@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AdminNav from "@/components/admin/AdminNav";
-import { isCurrentUserAdmin, requireUser } from "@/lib/auth";
+import { hasMfa, isCurrentUserAdmin, requireUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Editar site",
@@ -15,7 +15,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireUser("/admin");
+  const user = await requireUser("/admin");
 
   if (!(await isCurrentUserAdmin())) {
     return (
@@ -43,7 +43,28 @@ export default async function AdminLayout({
           <AdminNav />
         </div>
       </aside>
-      <div className="min-w-0">{children}</div>
+      <div className="min-w-0">
+        {!hasMfa(user) && (
+          <div
+            role="note"
+            className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gold/50 bg-sand-soft px-5 py-4"
+          >
+            <p className="max-w-xl text-[14.5px] text-body">
+              <b className="text-ink">Proteja sua conta de administrador.</b>{" "}
+              Ative a verificação em duas etapas: mesmo que alguém descubra a
+              sua senha, não consegue editar o site sem o código do seu
+              celular.
+            </p>
+            <Link
+              href="/perfil#seguranca"
+              className="btn btn-primary !px-5 !py-2 text-[13.5px]"
+            >
+              Ativar agora
+            </Link>
+          </div>
+        )}
+        {children}
+      </div>
     </div>
   );
 }

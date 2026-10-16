@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import MfaForm from "@/components/profile/MfaForm";
 import PasswordForm from "@/components/profile/PasswordForm";
 import ProfileForm from "@/components/profile/ProfileForm";
 import { isCurrentUserAdmin, requireUser } from "@/lib/auth";
@@ -47,6 +48,15 @@ export default async function PerfilPage() {
           <section id="senha" className="scroll-mt-8">
             <h2 className="mb-6 text-[1.7rem]">Alterar senha</h2>
             <PasswordForm />
+          </section>
+
+          <section id="seguranca" className="scroll-mt-28">
+            <h2 className="mb-2 text-[1.7rem]">Verificação em duas etapas</h2>
+            <p className="mb-6 max-w-md text-sm text-muted">
+              Uma camada extra de proteção: além da senha, o login pede um
+              código do seu celular.
+            </p>
+            <MfaForm />
           </section>
 
           <section>

@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export type HealthTask = {
   id: string;
-  group: "Contato" | "Fotos" | "Matérias" | "Textos";
+  group: "Segurança" | "Contato" | "Fotos" | "Matérias" | "Textos";
   title: string;
   doneTitle: string;
   hint: string;
@@ -99,7 +99,9 @@ const imageTasks: { key: string; title: string; hint: string }[] = [
 ];
 
 // Lê tudo direto do banco (sem cache) para o painel refletir o que foi salvo.
-export async function getSiteHealth(): Promise<SiteHealth> {
+export async function getSiteHealth(options: {
+  mfaEnabled: boolean;
+}): Promise<SiteHealth> {
   const supabase = await createClient();
 
   const [centerRow, contentRow, imageRows, posts] = await Promise.all([
@@ -132,6 +134,16 @@ export async function getSiteHealth(): Promise<SiteHealth> {
   ).length;
 
   const tasks: HealthTask[] = [
+    {
+      id: "seguranca-mfa",
+      group: "Segurança",
+      title: "Ativar a verificação em duas etapas",
+      doneTitle: "Verificação em duas etapas ativada",
+      hint: "Protege sua conta de administrador mesmo que alguém descubra a senha.",
+      href: "/perfil#seguranca",
+      action: "Ativar",
+      done: options.mfaEnabled,
+    },
     ...centerTasks.map<HealthTask>((t) => ({
       id: `centro-${t.key}`,
       group: "Contato",
