@@ -19,6 +19,18 @@ const nextConfig: NextConfig = {
         ]
       : [],
   },
+  // O site público tem só Início, Sobre nós e Equoterapia. As páginas de
+  // condições, matérias e contato continuam no código, mas redirecionam;
+  // para trazê-las de volta, apague estes redirecionamentos e reponha os
+  // links em lib/nav.ts, no rodapé e no sitemap.
+  async redirects() {
+    return [
+      { source: "/condicoes", destination: "/equoterapia", permanent: false },
+      { source: "/contato", destination: "/", permanent: false },
+      { source: "/blog", destination: "/", permanent: false },
+      { source: "/blog/:slug*", destination: "/", permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;

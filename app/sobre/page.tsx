@@ -2,8 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
 import SitePhoto from "@/components/SitePhoto";
-import { getCenterInfo, getSiteImages } from "@/lib/public-data";
-import { waLink } from "@/lib/site-config";
+import { getSiteImages } from "@/lib/public-data";
 
 export const metadata: Metadata = {
   title: "Sobre nós",
@@ -69,10 +68,7 @@ const badges = [
 ];
 
 export default async function SobrePage() {
-  const [center, images] = await Promise.all([
-    getCenterInfo(),
-    getSiteImages(),
-  ]);
+  const images = await getSiteImages();
 
   return (
     <div>
@@ -229,25 +225,15 @@ export default async function SobrePage() {
             Cuidando de Vidas
           </p>
           <h2 className="mt-3 max-w-xl">
-            Conhecimento também <em>é uma forma de cuidar.</em>
+            Entenda como a <em>equoterapia funciona.</em>
           </h2>
           <p className="mb-8 mt-5 max-w-lg text-[15px]">
-            Nossas matérias reúnem reflexões sobre acolhimento, família e
-            vínculos para tornar essa conversa mais próxima e acessível.
+            Conheça o método, os programas e os benefícios que o movimento do
+            cavalo pode trazer ao desenvolvimento.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <Link href="/blog" className="btn btn-primary">
-              Explore as matérias de Equoterapia <span aria-hidden>↗</span>
-            </Link>
-            <a
-              href={waLink(center, "Olá! Gostaria de conhecer o centro.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-outline"
-            >
-              Agendar visita
-            </a>
-          </div>
+          <Link href="/equoterapia" className="btn btn-primary">
+            Conheça a equoterapia <span aria-hidden>↗</span>
+          </Link>
         </div>
       </section>
     </div>

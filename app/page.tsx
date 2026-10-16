@@ -1,13 +1,9 @@
 import Link from "next/link";
 import FaqAccordion from "@/components/FaqAccordion";
-import PostCard from "@/components/PostCard";
 import SitePhoto from "@/components/SitePhoto";
 import { aboutPillars, conditions, homeFaqs, programs } from "@/lib/content";
-import { getPublishedPosts } from "@/lib/posts";
 import { getCenterInfo, getSiteImages } from "@/lib/public-data";
 import { waLink } from "@/lib/site-config";
-
-export const dynamic = "force-dynamic";
 
 const container = "mx-auto max-w-[1320px] px-6 md:px-12";
 
@@ -30,12 +26,10 @@ const steps = [
 ];
 
 export default async function Home() {
-  const [allPosts, center, images] = await Promise.all([
-    getPublishedPosts(),
+  const [center, images] = await Promise.all([
     getCenterInfo(),
     getSiteImages(),
   ]);
-  const posts = allPosts.slice(0, 3);
 
   return (
     <div>
@@ -59,14 +53,6 @@ export default async function Home() {
             <Link href="/equoterapia" className="btn btn-primary">
               Saiba mais <span aria-hidden>↗</span>
             </Link>
-            <a
-              href={waLink(center, "Olá! Gostaria de agendar uma avaliação.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-outline"
-            >
-              Agendar avaliação
-            </a>
           </div>
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-1 text-xs">
             <li>Equipe multiprofissional</li>
@@ -167,9 +153,6 @@ export default async function Home() {
             <h2 className="max-w-[720px]">
               Para quem a equoterapia <em>pode ser indicada</em>
             </h2>
-            <Link href="/condicoes" className="link-arrow">
-              Ver todas as condições ↗
-            </Link>
           </div>
           <div className="grid gap-x-7 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {conditions.map((condition) => (
@@ -186,8 +169,7 @@ export default async function Home() {
             ))}
           </div>
           <p className="mt-8 max-w-2xl text-[13px]">
-            A indicação depende sempre de avaliação médica e da equipe. Cada
-            condição terá página própria, com conteúdo aprofundado.
+            A indicação depende sempre de avaliação médica e da equipe.
           </p>
         </div>
       </section>
@@ -222,29 +204,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Matérias */}
-      <section className={`${container} pb-20 pt-[42px]`}>
-        <div className="mb-[30px] mt-8 flex flex-wrap items-end justify-between gap-4">
-          <h2 className="text-[2.4rem]">
-            Tudo sobre <em>EQUOTERAPIA</em>
-          </h2>
-          <Link href="/blog" className="link-arrow">
-            Ver todas as matérias ↗
-          </Link>
-        </div>
-        <div className="grid gap-x-7 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              fallbackCover={images.materia_padrao.url}
-            />
-          ))}
-        </div>
-      </section>
-
       {/* FAQ */}
-      <section id="faq" className="border-t border-rule">
+      <section id="faq">
         <div className={`${container} py-16`}>
           <script
             type="application/ld+json"
@@ -292,20 +253,12 @@ export default async function Home() {
               Cuidando de Vidas
             </p>
             <h2 className="mt-3 max-w-lg">
-              Vamos conversar sobre o <em>próximo passo?</em>
+              Quer entender melhor <em>como funciona?</em>
             </h2>
           </div>
           <div className="flex shrink-0 flex-wrap gap-4">
-            <a
-              href={waLink(center, "Olá! Gostaria de agendar uma avaliação.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-            >
-              Agendar avaliação
-            </a>
-            <Link href="/contato" className="btn btn-outline">
-              Contato
+            <Link href="/equoterapia" className="btn btn-primary">
+              Conheça a equoterapia <span aria-hidden>↗</span>
             </Link>
           </div>
         </div>

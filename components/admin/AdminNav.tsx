@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 
 const sections = [
   { href: "/admin", label: "Visão geral", exact: true },
-  { href: "/admin/materias", label: "Matérias" },
   { href: "/admin/centro", label: "Informações do centro" },
   { href: "/admin/imagens", label: "Imagens do site" },
 ];

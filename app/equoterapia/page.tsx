@@ -2,8 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import SitePhoto from "@/components/SitePhoto";
 import { programs } from "@/lib/content";
-import { getCenterInfo, getSiteImages } from "@/lib/public-data";
-import { waLink } from "@/lib/site-config";
+import { getSiteImages } from "@/lib/public-data";
 
 export const metadata: Metadata = {
   title: "Equoterapia",
@@ -21,10 +20,7 @@ const benefits = [
 ];
 
 export default async function EquoterapiaPage() {
-  const [center, images] = await Promise.all([
-    getCenterInfo(),
-    getSiteImages(),
-  ]);
+  const images = await getSiteImages();
 
   return (
     <div>
@@ -42,18 +38,10 @@ export default async function EquoterapiaPage() {
             coordenação, enquanto o vínculo com o animal favorece comunicação,
             autoconfiança e socialização.
           </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <a
-              href={waLink(center, "Olá! Gostaria de agendar uma avaliação.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-            >
-              Agendar avaliação
+          <div className="mt-8">
+            <a href="#programas" className="btn btn-primary">
+              Conheça os programas <span aria-hidden>↓</span>
             </a>
-            <Link href="/condicoes" className="btn btn-outline">
-              Condições tratadas
-            </Link>
           </div>
         </div>
         <figure className="relative">
@@ -141,17 +129,12 @@ export default async function EquoterapiaPage() {
               Cuidando de Vidas
             </p>
             <h2 className="mt-3 max-w-lg">
-              Tem dúvidas sobre <em>como começar?</em>
+              Conheça quem <em>cuida de cada praticante.</em>
             </h2>
           </div>
-          <a
-            href={waLink(center, "Olá! Gostaria de agendar uma avaliação.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary shrink-0"
-          >
-            Agendar avaliação
-          </a>
+          <Link href="/sobre#equipe" className="btn btn-primary shrink-0">
+            Conheça a equipe <span aria-hidden>↗</span>
+          </Link>
         </div>
       </section>
     </div>

@@ -7,7 +7,7 @@ import { displayName, useAuth } from "@/components/AuthProvider";
 import { Avatar } from "@/components/UserMenu";
 import { isActivePath, navLinks } from "@/lib/nav";
 
-export default function MobileNav({ whatsappHref }: { whatsappHref: string }) {
+export default function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { loading, user, profile, isAdmin, signOut } = useAuth();
@@ -122,16 +122,6 @@ export default function MobileNav({ whatsappHref }: { whatsappHref: string }) {
               </button>
             </>
           )}
-
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={close}
-            className="btn btn-primary mt-3 justify-center"
-          >
-            Agendar avaliação
-          </a>
         </nav>
       )}
     </div>

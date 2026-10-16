@@ -39,9 +39,6 @@ export default async function Footer() {
           <Link href="/sobre#estrutura" className={footerLink}>
             Estrutura e cavalos
           </Link>
-          <Link href="/contato" className={footerLink}>
-            Contato
-          </Link>
         </nav>
 
         <nav aria-label="Conteúdo" className="flex flex-col gap-2">
@@ -49,11 +46,8 @@ export default async function Footer() {
           <Link href="/equoterapia" className={footerLink}>
             Equoterapia
           </Link>
-          <Link href="/condicoes" className={footerLink}>
-            Condições tratadas
-          </Link>
-          <Link href="/blog" className={footerLink}>
-            Matérias
+          <Link href="/equoterapia#programas" className={footerLink}>
+            Programas
           </Link>
           <Link href="/#faq" className={footerLink}>
             Perguntas frequentes

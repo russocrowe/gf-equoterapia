@@ -13,7 +13,10 @@ export default async function AdminImagesPage() {
     .select("key, label, description, url, alt, caption")
     .order("key");
 
-  const rows = (data ?? []) as SiteImageRow[];
+  // A capa padrão das matérias fica oculta: o site não tem mais a página de matérias.
+  const rows = ((data ?? []) as SiteImageRow[]).filter(
+    (row) => row.key !== "materia_padrao",
+  );
 
   return (
     <div>

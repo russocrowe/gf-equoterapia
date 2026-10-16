@@ -46,7 +46,7 @@ export default function CenterForm({ initial }: { initial: CenterInfo }) {
             className="field"
           />
           <span className={hint}>
-            Com DDD. Os botões &ldquo;Agendar avaliação&rdquo; abrem esta conversa.
+            Com DDD. O botão &ldquo;Falar no WhatsApp&rdquo; abre esta conversa.
           </span>
         </label>
       </div>
