@@ -19,12 +19,12 @@ export default async function AdminLayout({
 
   if (!(await isCurrentUserAdmin())) {
     return (
-      <div className="mx-auto max-w-[1320px] px-6 pb-24 pt-12 md:px-12 md:pt-[72px]">
+      <div className="mx-auto max-w-[1240px] px-6 pb-24 pt-14 md:px-10 md:pt-20">
         <p className="eyebrow">Acesso restrito</p>
         <h1 className="my-6">
           Você ainda não pode <em>editar o site.</em>
         </h1>
-        <p className="max-w-xl text-[15px]">
+        <p className="lead max-w-xl">
           Sua conta está ativa, mas não tem permissão de administrador. Peça a
           quem cuida do site para liberar o acesso.
         </p>
@@ -36,10 +36,12 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="mx-auto grid max-w-[1320px] gap-10 px-6 pb-24 pt-10 md:px-12 lg:grid-cols-[220px_minmax(0,1fr)]">
-      <aside>
-        <p className="eyebrow mb-5">Editar site</p>
-        <AdminNav />
+    <div className="mx-auto grid max-w-[1240px] grid-cols-[minmax(0,1fr)] gap-8 px-6 pb-24 pt-8 md:px-10 lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-12 lg:pt-12">
+      <aside className="lg:self-start">
+        <div className="lg:sticky lg:top-40">
+          <p className="eyebrow mb-5">Editar site</p>
+          <AdminNav />
+        </div>
       </aside>
       <div className="min-w-0">{children}</div>
     </div>

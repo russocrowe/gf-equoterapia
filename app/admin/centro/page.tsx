@@ -27,12 +27,14 @@ export default async function AdminCenterPage() {
 
   return (
     <div>
-      <h1 className="text-[2.4rem]">
+      <p className="eyebrow">Configurações</p>
+      <h1 className="mt-4 text-[clamp(2rem,1.4rem+2vw,2.8rem)]">
         Informações do <em>centro</em>
       </h1>
-      <p className="mb-9 mt-3 max-w-xl text-[15px]">
-        Esses dados aparecem no rodapé, na página de contato, nos botões de
-        WhatsApp e nas informações que o Google lê sobre o centro.
+      <p className="mb-10 mt-4 max-w-xl text-[15.5px] text-muted">
+        Esses dados aparecem no rodapé, nos botões de WhatsApp e nas
+        informações que o Google lê sobre o centro. Campos em branco ficam
+        escondidos.
       </p>
       <CenterForm initial={initial} />
     </div>

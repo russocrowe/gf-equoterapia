@@ -4,8 +4,16 @@ import {
   type CenterInfo,
 } from "@/lib/site-config";
 
+import {
+  contentDefaults,
+  contentKeys,
+  type ContentKey,
+} from "@/lib/content-defaults";
+import { sanitizeRich } from "@/lib/rich-text";
+
 export const SITE_CONFIG_TAG = "site-config";
 export const SITE_IMAGES_TAG = "site-images";
+export const SITE_CONTENT_TAG = "site-content";
 
 // Leitura pública sem cookies: mantém as páginas estáticas e cacheadas.
 // Se o Supabase falhar (ou a migration ainda não foi aplicada), o site usa os
@@ -39,6 +47,25 @@ export async function getCenterInfo(): Promise<CenterInfo> {
     if (typeof value === "string") info[key] = value;
   }
   return info;
+}
+
+export type SiteContent = Record<ContentKey, string>;
+
+// Textos editáveis das páginas: o que está no banco vence o padrão do código.
+export async function getSiteContent(): Promise<SiteContent> {
+  const rows = await publicRest<{ value: Record<string, unknown> }[]>(
+    "site_settings?key=eq.content&select=value",
+    SITE_CONTENT_TAG,
+  );
+  const stored = rows?.[0]?.value ?? {};
+  const content = { ...contentDefaults } as Record<ContentKey, string>;
+  for (const key of contentKeys) {
+    const value = stored[key];
+    if (typeof value === "string" && value.trim()) {
+      content[key] = sanitizeRich(value);
+    }
+  }
+  return content;
 }
 
 export type SiteImage = { url: string; alt: string; caption: string };

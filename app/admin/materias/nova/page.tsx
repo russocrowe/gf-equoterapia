@@ -11,12 +11,10 @@ export default async function NewPostPage() {
       <Link href="/admin/materias" className="link-arrow">
         ← Voltar às matérias
       </Link>
-      <h1 className="my-6 text-[2.4rem]">
+      <h1 className="my-6 text-[clamp(2rem,1.4rem+2vw,2.8rem)]">
         Nova <em>matéria</em>
       </h1>
-      <div className="max-w-2xl">
-        <PostForm action={createPostAction} />
-      </div>
+      <PostForm action={createPostAction} />
     </div>
   );
 }

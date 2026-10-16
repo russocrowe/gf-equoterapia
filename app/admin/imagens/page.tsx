@@ -13,17 +13,15 @@ export default async function AdminImagesPage() {
     .select("key, label, description, url, alt, caption")
     .order("key");
 
-  // A capa padrão das matérias fica oculta: o site não tem mais a página de matérias.
-  const rows = ((data ?? []) as SiteImageRow[]).filter(
-    (row) => row.key !== "materia_padrao",
-  );
+  const rows = (data ?? []) as SiteImageRow[];
 
   return (
     <div>
-      <h1 className="text-[2.4rem]">
+      <p className="eyebrow">Conteúdo</p>
+      <h1 className="mt-4 text-[clamp(2rem,1.4rem+2vw,2.8rem)]">
         Imagens do <em>site</em>
       </h1>
-      <p className="mb-9 mt-3 max-w-xl text-[15px]">
+      <p className="mb-10 mt-4 max-w-xl text-[15.5px] text-muted">
         Envie as fotos que aparecem nas páginas. A troca entra no ar assim que
         a imagem é enviada.
       </p>
@@ -33,7 +31,7 @@ export default async function AdminImagesPage() {
           <SiteImageEditor key={row.key} row={row} />
         ))}
         {rows.length === 0 && (
-          <p className="border-t border-rule-strong pt-5 text-sm">
+          <p className="card p-6 text-sm text-muted">
             Nenhuma imagem configurável encontrada. Confira se a migration
             0003 foi aplicada no Supabase.
           </p>

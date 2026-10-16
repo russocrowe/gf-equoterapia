@@ -1,266 +1,140 @@
 import Link from "next/link";
-import FaqAccordion from "@/components/FaqAccordion";
-import SitePhoto from "@/components/SitePhoto";
-import { aboutPillars, conditions, homeFaqs, programs } from "@/lib/content";
-import { getCenterInfo, getSiteImages } from "@/lib/public-data";
-import { waLink } from "@/lib/site-config";
+import PostCard from "@/components/PostCard";
+import Reveal from "@/components/Reveal";
+import EditablePhoto from "@/components/editor/EditablePhoto";
+import T from "@/components/editor/T";
+import { getPublishedPosts } from "@/lib/posts";
+import { getSiteImages } from "@/lib/public-data";
 
-const container = "mx-auto max-w-[1320px] px-6 md:px-12";
+export const dynamic = "force-dynamic";
 
-const steps = [
-  {
-    title: "Avaliação inicial",
-    description:
-      "Conversa com a família, análise de laudos e avaliação da equipe para entender necessidades e objetivos.",
-  },
-  {
-    title: "Plano terapêutico",
-    description:
-      "Definição do programa, frequência das sessões e metas acompanhadas pela equipe multiprofissional.",
-  },
-  {
-    title: "Sessões e acompanhamento",
-    description:
-      "Atendimentos com o cavalo, registros de evolução e devolutivas periódicas para a família.",
-  },
-];
+const container = "mx-auto max-w-[1240px] px-6 md:px-10";
+
+const pillars = [1, 2, 3, 4] as const;
+const trust = [1, 2, 3] as const;
+
+function Check() {
+  return (
+    <span
+      aria-hidden
+      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-forest text-white"
+    >
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+        <path
+          d="M2.5 6.2 5 8.6l4.5-5"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
 
 export default async function Home() {
-  const [center, images] = await Promise.all([
-    getCenterInfo(),
+  const [allPosts, images] = await Promise.all([
+    getPublishedPosts(),
     getSiteImages(),
   ]);
+  const posts = allPosts.slice(0, 3);
 
   return (
     <div>
-      {/* Hero */}
-      <section
-        className={`${container} grid items-center gap-12 pb-16 pt-12 md:pt-[72px] lg:grid-cols-[1fr_1.05fr]`}
-      >
-        <div>
-          <p className="eyebrow">Centro de Equoterapia GF</p>
-          <h1 className="my-6">
-            Equoterapia que respeita cada pessoa,{" "}
-            <em>seu tempo e seu desenvolvimento.</em>
-          </h1>
-          <p className="max-w-[490px] text-[17px]">
-            No Centro de Equoterapia GF, o cavalo é parte de uma abordagem
-            terapêutica individualizada, conduzida por uma equipe preparada
-            para acompanhar cada praticante com cuidado, segurança e
-            acolhimento.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/equoterapia" className="btn btn-primary">
-              Saiba mais <span aria-hidden>↗</span>
-            </Link>
+      {/* Abertura */}
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-40 -top-40 h-[34rem] w-[34rem] rounded-full bg-sand-soft blur-3xl"
+        />
+        <div
+          className={`${container} relative grid items-center gap-14 pb-20 pt-12 md:pt-20 lg:grid-cols-[1fr_1.05fr] lg:gap-16`}
+        >
+          <div>
+            <T k="home.hero.eyebrow" as="p" className="eyebrow" />
+            <T k="home.hero.title" as="h1" className="my-6" />
+            <T k="home.hero.text" as="p" className="lead max-w-[520px]" />
+            <div className="mt-9 flex flex-wrap items-center gap-4">
+              <Link href="/equoterapia" className="btn btn-primary">
+                <T k="home.hero.cta" />
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
+            <ul className="mt-10 flex flex-col gap-3 text-[15px] font-medium text-body">
+              {trust.map((n) => (
+                <li key={n} className="flex items-center gap-3">
+                  <Check />
+                  <T k={`home.trust.${n}`} />
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-1 text-xs">
-            <li>Equipe multiprofissional</li>
-            <li>Método reconhecido pela Lei 13.830/2019</li>
-            <li>Todas as idades</li>
-          </ul>
-        </div>
 
-        <figure className="relative">
-          {/* Moldura areia atrás da foto, como o painel bege do uniforme */}
-          <div
-            aria-hidden
-            className="absolute -bottom-3 -right-3 h-full w-full rounded-[80px_12px_12px_12px] bg-sand md:-bottom-4 md:-right-4 md:rounded-[140px_12px_12px_12px]"
-          />
-          <SitePhoto
-            image={images.hero}
-            priority
-            sizes="(min-width: 1024px) 640px, 100vw"
-            className="relative aspect-[600/510] w-full rounded-[80px_12px_12px_12px] md:rounded-[140px_12px_12px_12px]"
-          />
-          {images.hero.caption && (
-            <figcaption className="photo-note !mt-6">
-              {images.hero.caption}
-            </figcaption>
-          )}
-        </figure>
+          <figure className="relative">
+            {/* Moldura areia atrás da foto, como o painel bege do uniforme */}
+            <div
+              aria-hidden
+              className="absolute -bottom-4 -right-4 h-full w-full rounded-[80px_16px_16px_16px] bg-sand md:-bottom-5 md:-right-5 md:rounded-[150px_16px_16px_16px]"
+            />
+            <EditablePhoto
+              imageKey="hero"
+              image={images.hero}
+              priority
+              sizes="(min-width: 1024px) 640px, 100vw"
+              className="relative aspect-[600/520] w-full rounded-[80px_16px_16px_16px] shadow-[0_30px_60px_-30px_rgb(0_2_89/0.45)] md:rounded-[150px_16px_16px_16px]"
+            />
+          </figure>
+        </div>
       </section>
 
       {/* Sobre o GF */}
-      <section className={`${container} pb-16 pt-9`}>
-        <p className="eyebrow">Sobre o GF</p>
-        <h2 className="mb-9 mt-3 max-w-[720px]">
-          Um espaço onde o cuidado acontece <em>a passo de cavalo.</em>
-        </h2>
-        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-          {aboutPillars.map((pillar, index) => (
-            <div key={pillar.title} className="border-t-2 border-sand pt-[22px]">
-              <span className="text-[13px] font-bold text-forest">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <h3 className="mb-2.5 mt-3.5">{pillar.title}</h3>
-              <p className="text-[15px]">{pillar.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* O que é equoterapia */}
-      <section className={`${container} pb-16 pt-9`}>
-        <div className="grid gap-12 lg:grid-cols-2">
-          <div>
-            <p className="eyebrow">O que é equoterapia</p>
-            <h2 className="mb-5 mt-3 text-[2rem] leading-[1.2]">
-              Um método terapêutico que usa o movimento do cavalo a favor do
-              desenvolvimento
-            </h2>
-            <p className="max-w-lg text-[15px]">
-              Ao passo, o cavalo produz um movimento tridimensional — para
-              frente e para os lados, para cima e para baixo — semelhante ao da
-              marcha humana. Esse estímulo trabalha equilíbrio, postura e
-              coordenação.
-            </p>
-            <p className="mt-4 max-w-lg text-[15px]">
-              Ao mesmo tempo, o vínculo com o animal e o ambiente ao ar livre
-              favorecem atenção, comunicação, autoconfiança e socialização.
-            </p>
-            <Link href="/equoterapia" className="link-arrow mt-6">
-              Saiba mais sobre a equoterapia ↗
-            </Link>
-          </div>
-          <div>
-            <p className="eyebrow">Como funciona</p>
-            <div className="mt-6 flex flex-col">
-              {steps.map((step, index) => (
-                <div
-                  key={step.title}
-                  className="grid grid-cols-[2rem_1fr] gap-3 border-t border-rule-strong py-5"
-                >
-                  <span className="pt-1 text-[13px] font-bold text-forest">
-                    {String(index + 1).padStart(2, "0")}
+      <section className="border-y border-rule bg-surface">
+        <div className={`${container} py-20 md:py-24`}>
+          <Reveal>
+            <T k="home.about.eyebrow" as="p" className="eyebrow" />
+            <T k="home.about.title" as="h2" className="mt-4 max-w-[760px]" />
+          </Reveal>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {pillars.map((n, index) => (
+              <Reveal key={n} delay={index * 80} className="h-full">
+                <div className="card h-full bg-paper p-7">
+                  <span
+                    aria-hidden
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-sage-soft font-display text-sm font-bold text-forest"
+                  >
+                    {String(n).padStart(2, "0")}
                   </span>
-                  <div>
-                    <h3 className="text-[1.15rem]">{step.title}</h3>
-                    <p className="mt-1.5 text-[15px]">{step.description}</p>
-                  </div>
+                  <T
+                    k={`home.pillar.${n}.title`}
+                    as="h3"
+                    className="mb-3 mt-6"
+                  />
+                  <T
+                    k={`home.pillar.${n}.text`}
+                    as="p"
+                    className="text-[15px] leading-relaxed text-muted"
+                  />
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Condições tratadas */}
-      <section className="bg-sage-soft">
-        <div className={`${container} py-16`}>
-          <p className="eyebrow">Condições tratadas</p>
-          <div className="mb-9 mt-3 flex flex-wrap items-end justify-between gap-4">
-            <h2 className="max-w-[720px]">
-              Para quem a equoterapia <em>pode ser indicada</em>
-            </h2>
-          </div>
-          <div className="grid gap-x-7 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-            {conditions.map((condition) => (
-              <div
-                key={condition.slug}
-                className="border-t-2 border-sage pt-[22px]"
-              >
-                <span className="text-xs font-bold uppercase tracking-[1.5px] text-forest">
-                  {condition.cid}
-                </span>
-                <h3 className="mb-2 mt-3">{condition.title}</h3>
-                <p className="text-[15px]">{condition.description}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
-          <p className="mt-8 max-w-2xl text-[13px]">
-            A indicação depende sempre de avaliação médica e da equipe.
-          </p>
         </div>
       </section>
 
-      {/* Programas */}
-      <section className="on-dark bg-forest-deep text-white">
-        <div className={`${container} py-16`}>
-          <p className="eyebrow">Programas</p>
-          <h2 className="mb-9 mt-3 max-w-[720px]">
-            Quatro programas, de acordo com o momento de{" "}
-            <em className="text-sand">cada praticante.</em>
-          </h2>
-          <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-            {programs.map((program) => (
-              <div
-                key={program.number}
-                className="border-t border-white/25 pt-[22px]"
-              >
-                <span className="text-[13px] font-bold text-gold">
-                  {program.number}
-                </span>
-                <h3 className="mb-2.5 mt-3.5">{program.title}</h3>
-                <p className="text-[15px] text-white/85">
-                  {program.description}
-                </p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-8 text-[13px] text-white/75">
-            Seguimos a classificação de programas adotada pela ANDE-Brasil.
-          </p>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq">
-        <div className={`${container} py-16`}>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                mainEntity: homeFaqs.map((faq) => ({
-                  "@type": "Question",
-                  name: faq.question,
-                  acceptedAnswer: { "@type": "Answer", text: faq.answer },
-                })),
-              }),
-            }}
-          />
-          <div>
-            <p className="eyebrow">Perguntas frequentes</p>
-            <div className="mb-9 mt-3 flex flex-wrap items-end justify-between gap-4">
-              <h2>
-                Dúvidas comuns de quem <em>está começando</em>
-              </h2>
-              <a
-                href={waLink(center, "Olá! Tenho uma dúvida sobre a equoterapia.")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-whatsapp"
-              >
-                Falar no WhatsApp
-              </a>
-            </div>
-            <div className="max-w-4xl">
-              <FaqAccordion items={homeFaqs} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA final */}
-      <section className="bg-sand">
-        <div
-          className={`${container} flex flex-col items-start justify-between gap-6 py-14 sm:flex-row sm:items-center`}
-        >
-          <div>
-            <p className="tagline !text-forest text-[1.5rem] leading-none">
-              Cuidando de Vidas
-            </p>
-            <h2 className="mt-3 max-w-lg">
-              Quer entender melhor <em>como funciona?</em>
-            </h2>
-          </div>
-          <div className="flex shrink-0 flex-wrap gap-4">
-            <Link href="/equoterapia" className="btn btn-primary">
-              Conheça a equoterapia <span aria-hidden>↗</span>
-            </Link>
-          </div>
+      {/* Matérias */}
+      <section className={`${container} py-20 md:py-24`}>
+        <Reveal className="mb-12 flex flex-wrap items-end justify-between gap-4">
+          <T k="home.posts.title" as="h2" />
+          <Link href="/equoterapia" className="link-arrow">
+            <T k="home.posts.link" /> <span aria-hidden>→</span>
+          </Link>
+        </Reveal>
+        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post, index) => (
+            <Reveal key={post.id} delay={index * 90} className="h-full">
+              <PostCard post={post} fallbackCover={images.materia_padrao.url} />
+            </Reveal>
+          ))}
         </div>
       </section>
     </div>

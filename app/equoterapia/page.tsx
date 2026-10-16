@@ -1,141 +1,113 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import SitePhoto from "@/components/SitePhoto";
-import { programs } from "@/lib/content";
+import ImagePlaceholder from "@/components/ImagePlaceholder";
+import PostCard from "@/components/PostCard";
+import Reveal from "@/components/Reveal";
+import T from "@/components/editor/T";
+import { formatDate } from "@/lib/format";
+import { getFeaturedPost, getPublishedPosts } from "@/lib/posts";
 import { getSiteImages } from "@/lib/public-data";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Equoterapia",
   description:
-    "O que é a equoterapia, como funciona, os programas seguidos pela classificação ANDE-Brasil e os benefícios do método.",
+    "Matérias sobre equoterapia, cuidado, acolhimento e os vínculos que fazem parte desse caminho.",
 };
 
-const container = "mx-auto max-w-[1320px] px-6 md:px-12";
-
-const benefits = [
-  "Equilíbrio, postura e coordenação motora",
-  "Tônus muscular e controle corporal",
-  "Atenção, comunicação e linguagem",
-  "Autoconfiança, socialização e vínculo",
-];
+const container = "mx-auto max-w-[1240px] px-6 md:px-10";
 
 export default async function EquoterapiaPage() {
-  const images = await getSiteImages();
+  const [posts, featured, images] = await Promise.all([
+    getPublishedPosts(),
+    getFeaturedPost(),
+    getSiteImages(),
+  ]);
+  const fallbackCover = images.materia_padrao.url;
+  const featuredCover = featured?.cover_image || fallbackCover;
 
   return (
     <div>
-      <section
-        className={`${container} grid items-center gap-12 pb-16 pt-12 md:pt-[72px] lg:grid-cols-[1fr_1.05fr]`}
-      >
-        <div>
-          <p className="eyebrow">Equoterapia</p>
-          <h1 className="my-6">
-            O movimento do cavalo a favor do <em>desenvolvimento.</em>
-          </h1>
-          <p className="max-w-[490px] text-[17px]">
-            Ao passo, o cavalo produz um movimento tridimensional — semelhante
-            ao da marcha humana — que estimula equilíbrio, postura e
-            coordenação, enquanto o vínculo com o animal favorece comunicação,
-            autoconfiança e socialização.
-          </p>
-          <div className="mt-8">
-            <a href="#programas" className="btn btn-primary">
-              Conheça os programas <span aria-hidden>↓</span>
-            </a>
-          </div>
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-40 -top-48 h-[30rem] w-[30rem] rounded-full bg-sand-soft blur-3xl"
+        />
+        <div className={`${container} relative pb-12 pt-14 md:pt-20`}>
+          <T k="equo.eyebrow" as="p" className="eyebrow" />
+          <T k="equo.title" as="h1" className="my-6" />
+          <T k="equo.intro" as="p" className="lead max-w-xl" />
         </div>
-        <figure className="relative">
-          <div
-            aria-hidden
-            className="absolute -bottom-3 -right-3 h-full w-full rounded-[80px_12px_12px_12px] bg-sand md:-bottom-4 md:-right-4 md:rounded-[140px_12px_12px_12px]"
-          />
-          <SitePhoto
-            image={images.hero}
-            priority
-            sizes="(min-width: 1024px) 640px, 100vw"
-            className="relative aspect-[600/510] w-full rounded-[80px_12px_12px_12px] md:rounded-[140px_12px_12px_12px]"
-          />
-          {images.hero.caption && (
-            <figcaption className="photo-note !mt-6">
-              {images.hero.caption}
-            </figcaption>
-          )}
-        </figure>
       </section>
 
-      <section id="programas" className="on-dark bg-forest-deep text-white">
-        <div className={`${container} py-16`}>
-          <p className="eyebrow">Programas</p>
-          <h2 className="mb-9 mt-3 max-w-[720px]">
-            Quatro programas, de acordo com o momento de{" "}
-            <em className="text-sand">cada praticante.</em>
-          </h2>
-          <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-            {programs.map((program) => (
-              <div
-                key={program.number}
-                className="border-t border-white/25 pt-[22px]"
+      {featured && (
+        <section className={`${container} pb-16 pt-4`}>
+          <Reveal>
+            <article className="grid overflow-hidden rounded-3xl bg-sage-soft shadow-[var(--shadow-md)] lg:grid-cols-[1.1fr_1fr]">
+              <Link
+                href={`/blog/${featured.slug}`}
+                aria-label={featured.title}
+                className="block overflow-hidden"
               >
-                <span className="text-[13px] font-bold text-gold">
-                  {program.number}
-                </span>
-                <h3 className="mb-2.5 mt-3.5">{program.title}</h3>
-                <p className="text-[15px] text-white/85">
-                  {program.description}
+                {featuredCover ? (
+                  <Image
+                    src={featuredCover}
+                    alt={`Imagem da matéria: ${featured.title}`}
+                    width={1200}
+                    height={800}
+                    priority
+                    className="aspect-[3/2] h-full w-full object-cover transition-transform duration-500 hover:scale-[1.02]"
+                  />
+                ) : (
+                  <ImagePlaceholder
+                    label="Imagem em breve"
+                    className="aspect-[3/2] h-full w-full !rounded-none !border-0"
+                  />
+                )}
+              </Link>
+              <div className="flex flex-col justify-center p-8 lg:p-14">
+                <p className="flex items-center gap-2 text-[11.5px] font-bold uppercase tracking-[0.14em] text-forest">
+                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold" />
+                  Leitura em destaque · {featured.category}
                 </p>
+                <h2 className="mb-4 mt-4 text-[clamp(1.6rem,1.2rem+1.4vw,2.2rem)] leading-[1.18]">
+                  {featured.title}
+                </h2>
+                <p className="max-w-md text-[16px] leading-relaxed text-body">
+                  {featured.excerpt}
+                </p>
+                <p className="mt-3 text-[13px] text-muted">
+                  {formatDate(featured.published_at)}
+                </p>
+                <Link
+                  href={`/blog/${featured.slug}`}
+                  className="btn btn-primary mt-7 self-start"
+                >
+                  Ler matéria <span aria-hidden>→</span>
+                </Link>
               </div>
+            </article>
+          </Reveal>
+        </section>
+      )}
+
+      <section className={`${container} pb-24`}>
+        <T k="equo.all.title" as="h2" className="mb-10 text-[1.9rem]" />
+        {posts.length > 0 ? (
+          <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post, index) => (
+              <Reveal key={post.id} delay={(index % 3) * 90} className="h-full">
+                <PostCard post={post} fallbackCover={fallbackCover} />
+              </Reveal>
             ))}
           </div>
-          <p className="mt-8 text-[13px] text-white/75">
-            Classificação de programas adotada pela ANDE-Brasil (Associação
-            Nacional de Equoterapia).
+        ) : (
+          <p className="text-[15px] text-muted">
+            Em breve, novas matérias por aqui.
           </p>
-        </div>
-      </section>
-
-      <section id="beneficios" className={`${container} py-16`}>
-        <p className="eyebrow">Benefícios</p>
-        <h2 className="mb-9 mt-3 max-w-[720px]">
-          O que a equoterapia <em>pode estimular</em>
-        </h2>
-        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-          {benefits.map((benefit, index) => (
-            <div
-              key={benefit}
-              className="border-t-2 border-sand pt-[22px]"
-            >
-              <span className="text-[13px] font-bold text-forest">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <p className="mt-3.5 font-display text-[1.15rem] font-medium leading-[1.3] tracking-[-0.02em]">
-                {benefit}
-              </p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-8 max-w-2xl text-[13px]">
-          A equoterapia é complementar e não substitui outros tratamentos. A
-          indicação deve partir da avaliação médica e da equipe
-          multiprofissional.
-        </p>
-      </section>
-
-      <section className="bg-sand">
-        <div
-          className={`${container} flex flex-col items-start justify-between gap-6 py-14 sm:flex-row sm:items-center`}
-        >
-          <div>
-            <p className="tagline !text-forest text-[1.5rem] leading-none">
-              Cuidando de Vidas
-            </p>
-            <h2 className="mt-3 max-w-lg">
-              Conheça quem <em>cuida de cada praticante.</em>
-            </h2>
-          </div>
-          <Link href="/sobre#equipe" className="btn btn-primary shrink-0">
-            Conheça a equipe <span aria-hidden>↗</span>
-          </Link>
-        </div>
+        )}
       </section>
     </div>
   );

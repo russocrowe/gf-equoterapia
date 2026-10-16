@@ -10,7 +10,7 @@ export default function NavLinks() {
   return (
     <nav
       aria-label="Principal"
-      className="hidden items-center gap-5 text-sm 2xl:gap-7 lg:flex"
+      className="hidden items-center gap-7 text-[15px] font-medium lg:flex"
     >
       {navLinks.map((link) => {
         const active = isActivePath(pathname, link.href);
@@ -19,10 +19,10 @@ export default function NavLinks() {
             key={link.href}
             href={link.href}
             aria-current={active ? "page" : undefined}
-            className={`border-b pb-[5px] transition-colors ${
+            className={`border-b-2 pb-[5px] transition-colors ${
               active
-                ? "border-navy"
-                : "border-transparent hover:border-rule-strong"
+                ? "border-gold text-ink"
+                : "border-transparent text-body hover:border-rule-strong hover:text-ink"
             }`}
           >
             {link.label}

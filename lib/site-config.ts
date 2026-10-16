@@ -24,6 +24,12 @@ export const defaultCenterInfo: CenterInfo = {
 
 export const centerInfoKeys = Object.keys(defaultCenterInfo) as (keyof CenterInfo)[];
 
+// Valores entre colchetes ("[CIDADE – UF]") são só marcadores: devolve "" para eles.
+export function filledValue(value: string): string {
+  const text = value.trim();
+  return text.startsWith("[") ? "" : text;
+}
+
 export function instagramHandle(center: Pick<CenterInfo, "instagram">): string {
   const handle = center.instagram.trim().replace(/^@/, "");
   return handle ? `@${handle}` : "";

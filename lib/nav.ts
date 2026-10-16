@@ -6,5 +6,7 @@ export const navLinks = [
 
 export function isActivePath(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
+  // As matérias (/blog/...) fazem parte da seção Equoterapia.
+  if (href === "/equoterapia" && pathname.startsWith("/blog")) return true;
   return pathname === href || pathname.startsWith(`${href}/`);
 }

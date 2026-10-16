@@ -11,7 +11,13 @@ import {
   updatePost,
   type PostInput,
 } from "@/lib/posts";
-import { SITE_CONFIG_TAG, SITE_IMAGES_TAG } from "@/lib/public-data";
+import { MAX_CONTENT_LENGTH, isContentKey } from "@/lib/content-defaults";
+import {
+  SITE_CONFIG_TAG,
+  SITE_CONTENT_TAG,
+  SITE_IMAGES_TAG,
+} from "@/lib/public-data";
+import { plainText, sanitizeRich } from "@/lib/rich-text";
 import { centerInfoKeys } from "@/lib/site-config";
 import { createClient } from "@/lib/supabase/server";
 
@@ -46,7 +52,7 @@ function readPostInput(formData: FormData): PostInput {
 
 function revalidatePosts(slug?: string) {
   revalidatePath("/admin", "layout");
-  revalidatePath("/blog");
+  revalidatePath("/equoterapia");
   revalidatePath("/");
   if (slug) revalidatePath(`/blog/${slug}`);
 }
@@ -160,4 +166,76 @@ export async function saveSiteImageAction(input: {
   updateTag(SITE_IMAGES_TAG);
   revalidatePath("/", "layout");
   return { ok: true, message: "Imagem salva e publicada." };
+}
+
+// ---------------------------------------------------------------------------
+// Textos das páginas (editor visual / "canvas")
+// ---------------------------------------------------------------------------
+
+export type SaveContentResult = {
+  ok: boolean;
+  message: string;
+  // Valor final de cada chave, já limpo; "" = voltou ao texto original.
+  saved?: Record<string, string>;
+};
+
+export async function saveContentAction(
+  changes: Record<string, string>,
+): Promise<SaveContentResult> {
+  await assertAdmin();
+
+  const clean: Record<string, string> = {};
+  for (const [key, raw] of Object.entries(changes ?? {})) {
+    if (!isContentKey(key) || typeof raw !== "string") continue;
+    const value = sanitizeRich(raw);
+    if (plainText(value).length > MAX_CONTENT_LENGTH) {
+      return {
+        ok: false,
+        message: `Um dos textos passou de ${MAX_CONTENT_LENGTH} caracteres. Encurte e salve de novo.`,
+      };
+    }
+    clean[key] = plainText(value) ? value : "";
+  }
+
+  if (Object.keys(clean).length === 0) {
+    return { ok: true, message: "Nada para salvar.", saved: {} };
+  }
+
+  const supabase = await createClient();
+  const { data: existing, error: readError } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", "content")
+    .maybeSingle();
+
+  if (readError) {
+    return { ok: false, message: "Não foi possível ler os textos atuais. Tente de novo." };
+  }
+
+  const merged: Record<string, string> = {
+    ...((existing?.value as Record<string, string> | null) ?? {}),
+  };
+  for (const [key, value] of Object.entries(clean)) {
+    if (value) merged[key] = value;
+    else delete merged[key]; // texto vazio = volta ao padrão do site
+  }
+
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert({ key: "content", value: merged }, { onConflict: "key" });
+
+  if (error) {
+    return {
+      ok: false,
+      message: "Não foi possível salvar agora. Suas alterações continuam na tela.",
+    };
+  }
+
+  updateTag(SITE_CONTENT_TAG);
+  revalidatePath("/", "layout");
+  return {
+    ok: true,
+    message: "Alterações publicadas. O site já mostra os novos textos.",
+    saved: clean,
+  };
 }

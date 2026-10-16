@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
+import EditBar from "@/components/editor/EditBar";
+import { EditorProvider } from "@/components/editor/EditorProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getCenterInfo } from "@/lib/public-data";
-import { SITE_NAME } from "@/lib/site-config";
+import { SITE_NAME, filledValue } from "@/lib/site-config";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -31,10 +33,13 @@ const siteUrl = (
 
 export async function generateMetadata(): Promise<Metadata> {
   const center = await getCenterInfo();
+  const city = filledValue(center.city);
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: `${SITE_NAME} — Equoterapia em ${center.city}`,
+      default: city
+        ? `${SITE_NAME} — Equoterapia em ${city}`
+        : `${SITE_NAME} — Equoterapia`,
       template: `%s | ${SITE_NAME}`,
     },
     description:
@@ -54,7 +59,7 @@ export default async function RootLayout({
 
   return (
     <html lang="pt-BR" className={`${manrope.variable} ${dmSans.variable} ${cormorant.variable}`}>
-      <body className="flex min-h-screen flex-col bg-paper font-sans text-ink antialiased">
+      <body className="flex min-h-screen flex-col bg-paper font-sans text-body antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -68,11 +73,11 @@ export default async function RootLayout({
               logo: `${siteUrl}/logo-gf-transparent.png`,
               address: {
                 "@type": "PostalAddress",
-                streetAddress: center.address,
-                addressLocality: center.city,
+                streetAddress: filledValue(center.address) || undefined,
+                addressLocality: filledValue(center.city) || undefined,
               },
-              telephone: center.whatsapp,
-              email: center.email,
+              telephone: filledValue(center.whatsapp) || undefined,
+              email: filledValue(center.email) || undefined,
             }),
           }}
         />
@@ -83,11 +88,17 @@ export default async function RootLayout({
           Ir para o conteúdo
         </a>
         <AuthProvider>
-          <Header />
-          <main id="conteudo" className="flex-1">
-            {children}
-          </main>
-          <Footer />
+          <EditorProvider>
+            {/* A barra do administrador e o cabeçalho ficam juntos no topo */}
+            <div className="sticky top-0 z-50">
+              <EditBar />
+              <Header />
+            </div>
+            <main id="conteudo" className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </EditorProvider>
         </AuthProvider>
       </body>
     </html>

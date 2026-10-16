@@ -77,17 +77,17 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
   }
 
   return (
-    <section className="grid gap-6 border-t border-rule-strong pt-6 md:grid-cols-[260px_1fr]">
+    <section className="card grid gap-6 p-6 md:grid-cols-[280px_1fr] md:p-7">
       <div>
         {url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={url}
             alt={alt}
-            className="aspect-[3/2] w-full rounded-xl object-cover"
+            className="aspect-[3/2] w-full rounded-2xl object-cover"
           />
         ) : (
-          <div className="flex aspect-[3/2] w-full items-center justify-center rounded-xl border border-dashed border-rule-strong bg-mist text-sm">
+          <div className="flex aspect-[3/2] w-full items-center justify-center rounded-2xl border border-dashed border-sand bg-sand-soft text-sm text-muted">
             Sem imagem
           </div>
         )}
@@ -96,7 +96,7 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
       <div className="flex max-w-xl flex-col gap-4">
         <div>
           <h2 className="text-[1.3rem]">{row.label}</h2>
-          {row.description && <p className="mt-1 text-sm">{row.description}</p>}
+          {row.description && <p className="mt-1 text-sm text-muted">{row.description}</p>}
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
@@ -120,10 +120,10 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
               Remover
             </button>
           )}
-          <span className="text-xs">JPG, PNG ou WebP — até 5 MB.</span>
+          <span className="text-xs text-muted">JPG, PNG ou WebP — até 5 MB.</span>
         </div>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium">
+        <label className="flex flex-col gap-1.5 text-sm font-semibold text-ink">
           Descrição da imagem (para leitores de tela e Google)
           <input
             value={alt}
@@ -133,7 +133,7 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
           />
         </label>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium">
+        <label className="flex flex-col gap-1.5 text-sm font-semibold text-ink">
           Legenda (opcional)
           <input
             value={caption}
@@ -147,9 +147,9 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
         {message && (
           <p
             role={message.ok ? "status" : "alert"}
-            className={`rounded-md border px-4 py-3 text-sm ${
+            className={`rounded-xl border px-4 py-3 text-sm ${
               message.ok
-                ? "border-rule-strong bg-mist"
+                ? "border-forest/30 bg-sage-soft text-forest"
                 : "border-red-200 bg-red-50 text-red-800"
             }`}
           >
