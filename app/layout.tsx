@@ -6,6 +6,7 @@ import EditBar from "@/components/editor/EditBar";
 import { EditorProvider } from "@/components/editor/EditorProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { jsonLd } from "@/lib/json-ld";
 import { getCenterInfo } from "@/lib/public-data";
 import { SITE_NAME, filledValue } from "@/lib/site-config";
 
@@ -63,7 +64,7 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: jsonLd({
               "@context": "https://schema.org",
               "@type": "MedicalBusiness",
               name: SITE_NAME,

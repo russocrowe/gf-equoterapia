@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { formatDate } from "@/lib/format";
 import { getPostBySlug } from "@/lib/posts";
+import { jsonLd } from "@/lib/json-ld";
 import { getSiteImages } from "@/lib/public-data";
 
 export const dynamic = "force-dynamic";
@@ -48,7 +49,7 @@ export default async function BlogPostPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             "@context": "https://schema.org",
             "@type": "Article",
             headline: post.title,
