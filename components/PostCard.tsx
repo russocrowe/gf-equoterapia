@@ -1,21 +1,47 @@
+import Image from "next/image";
 import Link from "next/link";
+import ImagePlaceholder from "@/components/ImagePlaceholder";
+import { formatDate } from "@/lib/format";
 import type { Post } from "@/lib/posts";
 
-export default function PostCard({ post }: { post: Post }) {
+export default function PostCard({
+  post,
+  fallbackCover,
+}: {
+  post: Post;
+  fallbackCover?: string;
+}) {
+  const cover = post.cover_image || fallbackCover;
+
   return (
-    <article className="flex flex-col gap-3 border-b border-tinta/10 py-8 first:pt-0">
-      <span className="inline-block w-fit rounded-full bg-marrom-claro px-2.5 py-1 font-display text-xs font-semibold text-marrom">
-        {post.category}
-      </span>
-      <h3 className="font-display text-xl font-semibold leading-snug">
-        {post.title}
-      </h3>
-      <p className="text-sm text-tinta/60">{post.excerpt}</p>
-      <Link
-        href={`/blog/${post.slug}`}
-        className="font-display text-sm font-medium text-azul underline decoration-2 underline-offset-4"
-      >
-        {post.read_minutes} min de leitura &middot; Ler artigo →
+    <article className="border-t border-rule-strong pt-5">
+      <Link href={`/blog/${post.slug}`} className="group block">
+        {cover ? (
+          <Image
+            src={cover}
+            alt={`Imagem da matéria: ${post.title}`}
+            width={800}
+            height={430}
+            className="aspect-[800/430] w-full rounded-xl object-cover"
+          />
+        ) : (
+          <ImagePlaceholder
+            label="Imagem em breve"
+            className="aspect-[800/430] w-full"
+          />
+        )}
+        <p className="mt-5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[1.5px] text-forest">
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold" />
+          {post.category}
+        </p>
+        <h3 className="mt-2 decoration-1 underline-offset-4 group-hover:underline">
+          {post.title}
+        </h3>
+        <p className="mt-2 text-sm">{post.excerpt}</p>
+        <p className="mt-5 text-xs">
+          {formatDate(post.published_at)}
+          {post.published_at ? " · " : ""}Ler matéria ↗
+        </p>
       </Link>
     </article>
   );

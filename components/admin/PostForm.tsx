@@ -14,6 +14,8 @@ function slugify(value: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+const label = "flex flex-col gap-1.5 text-sm font-medium";
+
 export default function PostForm({
   post,
   action,
@@ -54,7 +56,7 @@ export default function PostForm({
 
   return (
     <form action={action} className="flex flex-col gap-6">
-      <label className="flex flex-col gap-1 text-sm">
+      <label className={label}>
         Título
         <input
           name="title"
@@ -64,12 +66,12 @@ export default function PostForm({
             setTitle(e.target.value);
             if (!slugTouched) setSlug(slugify(e.target.value));
           }}
-          className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+          className="field"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
-        Slug (URL)
+      <label className={label}>
+        Endereço da matéria (URL)
         <input
           name="slug"
           required
@@ -78,23 +80,23 @@ export default function PostForm({
             setSlugTouched(true);
             setSlug(slugify(e.target.value));
           }}
-          className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm font-mono outline-none focus:border-green"
+          className="field font-mono"
         />
-        <span className="text-xs text-muted">/blog/{slug || "seu-slug"}</span>
+        <span className="text-xs font-normal">/blog/{slug || "endereco-da-materia"}</span>
       </label>
 
-      <div className="grid grid-cols-2 gap-4">
-        <label className="flex flex-col gap-1 text-sm">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className={label}>
           Categoria
           <input
             name="category"
             required
             defaultValue={post?.category ?? ""}
             placeholder="Ex: Acolhimento"
-            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+            className="field"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className={label}>
           Minutos de leitura
           <input
             name="read_minutes"
@@ -102,138 +104,150 @@ export default function PostForm({
             min={1}
             defaultValue={post?.read_minutes ?? ""}
             placeholder="Automático se vazio"
-            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+            className="field"
           />
         </label>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <label className="flex flex-col gap-1 text-sm">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className={label}>
           Autor(a)
           <input
             name="author_name"
             defaultValue={post?.author_name ?? ""}
             placeholder="Nome"
-            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+            className="field"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className={label}>
           Profissão do autor(a)
           <input
             name="author_role"
             defaultValue={post?.author_role ?? ""}
             placeholder="Ex: Fisioterapeuta"
-            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+            className="field"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className={label}>
           Revisado por
           <input
             name="reviewed_by"
             defaultValue={post?.reviewed_by ?? ""}
             placeholder="Nome"
-            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+            className="field"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className={label}>
           Profissão do revisor
           <input
             name="reviewed_role"
             defaultValue={post?.reviewed_role ?? ""}
             placeholder="Ex: Psicóloga"
-            className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+            className="field"
           />
         </label>
       </div>
 
-      <label className="flex flex-col gap-1 text-sm">
+      <label className={label}>
         Resumo (aparece na listagem)
         <textarea
           name="excerpt"
           required
           rows={2}
           defaultValue={post?.excerpt ?? ""}
-          className="rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm outline-none focus:border-green"
+          className="field"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
-        Imagem de capa
+      <div className={label}>
+        <label htmlFor="cover-upload">Imagem de capa</label>
         <input
+          id="cover-upload"
           type="file"
           accept="image/*"
           onChange={(e) => {
             const file = e.target.files?.[0];
-            if (file) handleFileUpload(file);
+            if (file) void handleFileUpload(file);
           }}
-          className="text-sm"
+          className="text-sm font-normal"
         />
         <input type="hidden" name="cover_image" value={coverImage} />
-        {uploading && <span className="text-xs text-muted">Enviando…</span>}
+        {uploading && <span className="text-xs font-normal">Enviando…</span>}
         {uploadError && (
-          <span className="text-xs text-red-700">{uploadError}</span>
+          <span role="alert" className="text-xs font-normal text-red-800">
+            {uploadError}
+          </span>
         )}
         {coverImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={coverImage}
-            alt="Pré-visualização da capa"
-            className="mt-2 h-32 w-auto rounded-lg object-cover"
-          />
+          <div className="mt-1 flex items-end gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={coverImage}
+              alt="Pré-visualização da capa"
+              className="h-32 w-auto rounded-lg object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => setCoverImage("")}
+              className="link-arrow font-normal"
+            >
+              Remover capa
+            </button>
+          </div>
         )}
-      </label>
+      </div>
 
-      <div className="flex flex-col gap-1 text-sm">
+      <div className="flex flex-col gap-1.5 text-sm">
         <div className="flex items-center justify-between">
-          <span>Conteúdo (markdown)</span>
+          <label htmlFor="content" className="font-medium">
+            Conteúdo (markdown)
+          </label>
           <button
             type="button"
             onClick={() => setShowPreview((v) => !v)}
-            className="text-xs font-medium underline decoration-lime decoration-2 underline-offset-4"
+            className="link-arrow text-xs"
           >
             {showPreview ? "Editar" : "Pré-visualizar"}
           </button>
         </div>
-        {showPreview ? (
-          <div className="prose-article min-h-64 rounded-lg border border-ink/20 bg-white px-4 py-3">
+        {showPreview && (
+          <div className="prose-article min-h-64 rounded-md border border-rule-strong bg-white px-4 py-3">
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
-        ) : (
-          <textarea
-            name="content"
-            required
-            rows={16}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="rounded-lg border border-ink/20 bg-white px-3 py-2 font-mono text-sm outline-none focus:border-green"
-          />
         )}
+        {/* Fica montado (só oculto) para o conteúdo ir junto no envio. */}
+        <textarea
+          id="content"
+          name="content"
+          required
+          rows={16}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className={`field font-mono ${showPreview ? "hidden" : ""}`}
+        />
       </div>
 
-      <div className="flex items-center gap-6">
-        <label className="flex items-center gap-2 text-sm">
+      <div className="flex flex-wrap items-center gap-6 text-sm">
+        <label className="flex items-center gap-2">
           <input
             type="checkbox"
             name="featured"
             defaultChecked={post?.featured ?? false}
           />
-          Destacar no blog
+          Destacar na página de matérias
         </label>
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-2">
           <input
             type="checkbox"
             name="published"
             defaultChecked={post?.published ?? false}
           />
-          Publicado
+          Publicada
         </label>
       </div>
 
-      <button
-        type="submit"
-        className="self-start rounded-full bg-green px-6 py-3 font-display text-sm font-semibold text-paper transition-opacity hover:opacity-90"
-      >
-        Salvar artigo
+      <button type="submit" className="btn btn-primary self-start">
+        Salvar matéria
       </button>
     </form>
   );

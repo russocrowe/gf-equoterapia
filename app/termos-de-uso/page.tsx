@@ -6,9 +6,10 @@ export const metadata: Metadata = {
 
 export default function TermosDeUsoPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="font-display text-3xl font-semibold">Termos de uso</h1>
-      <p className="mt-6 rounded-xl border border-dashed border-tinta/20 bg-azul-claro p-5 text-sm text-tinta/70">
+    <div className="mx-auto max-w-[1320px] px-6 pb-20 pt-12 md:px-12 md:pt-[72px]">
+      <p className="eyebrow">Legal</p>
+      <h1 className="my-6">Termos de uso</h1>
+      <p className="max-w-2xl rounded-xl border border-dashed border-sand bg-sand-soft p-6 text-[15px]">
         [Conteúdo em elaboração. Esta página deve descrever as condições de
         uso do site, isenções de responsabilidade sobre o conteúdo
         informativo (que não substitui avaliação médica) e demais termos.

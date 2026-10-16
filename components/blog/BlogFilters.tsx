@@ -4,7 +4,15 @@ import { useMemo, useState } from "react";
 import PostCard from "@/components/PostCard";
 import type { Post } from "@/lib/posts";
 
-export default function BlogFilters({ posts }: { posts: Post[] }) {
+const pill = "rounded-full border px-4 py-2 text-sm transition-colors";
+
+export default function BlogFilters({
+  posts,
+  fallbackCover,
+}: {
+  posts: Post[];
+  fallbackCover?: string;
+}) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
 
@@ -27,57 +35,55 @@ export default function BlogFilters({ posts }: { posts: Post[] }) {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setCategory(null)}
-          className={`rounded-full px-4 py-2 font-display text-sm font-medium transition-colors ${
-            category === null
-              ? "bg-azul text-white"
-              : "border border-tinta/15 text-tinta/70 hover:border-azul"
-          }`}
-        >
-          Todos
-        </button>
-        {categories.map((c) => (
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-2">
           <button
-            key={c}
             type="button"
-            onClick={() => setCategory(c)}
-            className={`rounded-full px-4 py-2 font-display text-sm font-medium transition-colors ${
-              category === c
-                ? "bg-azul text-white"
-                : "border border-tinta/15 text-tinta/70 hover:border-azul"
+            onClick={() => setCategory(null)}
+            className={`${pill} ${
+              category === null
+                ? "border-forest bg-forest text-white"
+                : "border-rule-strong hover:border-forest"
             }`}
           >
-            {c}
+            Todas
           </button>
-        ))}
-      </div>
+          {categories.map((c) => (
+            <button
+              key={c}
+              type="button"
+              onClick={() => setCategory(c)}
+              className={`${pill} ${
+                category === c
+                  ? "border-forest bg-forest text-white"
+                  : "border-rule-strong hover:border-forest"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
 
-      <div className="mt-6">
-        <label className="relative block max-w-sm">
-          <span className="sr-only">Buscar no blog</span>
+        <label className="block w-full sm:max-w-xs">
+          <span className="sr-only">Buscar nas matérias</span>
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Ex.: autismo, hipoterapia…"
-            className="w-full rounded-full border border-tinta/15 bg-white px-5 py-2.5 text-sm outline-none focus:border-azul"
+            placeholder="Buscar: autismo, hipoterapia…"
+            className="field rounded-full px-5"
           />
         </label>
       </div>
 
-      <div className="mt-8 flex flex-col">
+      <div className="mt-10 grid grid-cols-1 gap-x-7 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((post) => (
-          <PostCard key={post.id} post={post} />
+          <PostCard key={post.id} post={post} fallbackCover={fallbackCover} />
         ))}
-        {filtered.length === 0 && (
-          <p className="py-8 text-sm text-tinta/60">
-            Nenhum artigo encontrado para essa busca.
-          </p>
-        )}
       </div>
+      {filtered.length === 0 && (
+        <p className="py-8 text-sm">Nenhuma matéria encontrada para essa busca.</p>
+      )}
     </div>
   );
 }

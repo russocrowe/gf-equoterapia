@@ -1,69 +1,86 @@
 import Link from "next/link";
-import { getAllPostsAdmin } from "@/lib/posts";
-import DeletePostButton from "@/components/admin/DeletePostButton";
+import { requireAdminPage } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 
-export default async function AdminDashboardPage() {
-  const posts = await getAllPostsAdmin();
+async function countRows(
+  table: "posts" | "newsletter_subscribers",
+  filter?: { column: string; value: boolean },
+) {
+  const supabase = await createClient();
+  let query = supabase.from(table).select("id", { count: "exact", head: true });
+  if (filter) query = query.eq(filter.column, filter.value);
+  const { count } = await query;
+  return count ?? 0;
+}
+
+const shortcuts = [
+  {
+    href: "/admin/materias",
+    title: "Matérias",
+    text: "Escreva, edite e publique as matérias do site.",
+  },
+  {
+    href: "/admin/centro",
+    title: "Informações do centro",
+    text: "Endereço, WhatsApp, e-mail, Instagram, CNPJ e horário.",
+  },
+  {
+    href: "/admin/imagens",
+    title: "Imagens do site",
+    text: "Troque a foto principal e as imagens padrão do site.",
+  },
+];
+
+export default async function AdminOverviewPage() {
+  await requireAdminPage("/admin");
+
+  const [published, drafts, subscribers] = await Promise.all([
+    countRows("posts", { column: "published", value: true }),
+    countRows("posts", { column: "published", value: false }),
+    countRows("newsletter_subscribers"),
+  ]);
+
+  const stats = [
+    { label: "Matérias publicadas", value: published },
+    { label: "Rascunhos", value: drafts },
+    { label: "Inscritos na newsletter", value: subscribers },
+  ];
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-semibold">
-          Artigos do blog
-        </h1>
-        <Link
-          href="/admin/posts/new"
-          className="rounded-full bg-green px-5 py-2.5 font-display text-sm font-semibold text-paper transition-opacity hover:opacity-90"
-        >
-          + Novo artigo
-        </Link>
-      </div>
+      <h1 className="text-[2.4rem]">
+        Editar <em>site</em>
+      </h1>
+      <p className="mt-3 max-w-xl text-[15px]">
+        Aqui você atualiza o conteúdo que aparece para as famílias. As
+        mudanças entram no ar assim que você salva.
+      </p>
 
-      <div className="mt-8 flex flex-col gap-3">
-        {posts.map((post) => (
-          <div
-            key={post.id}
-            className="flex items-center justify-between gap-4 rounded-xl border border-ink/10 bg-white px-5 py-4"
-          >
-            <div>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    post.published
-                      ? "bg-green/10 text-green"
-                      : "bg-muted/10 text-muted"
-                  }`}
-                >
-                  {post.published ? "Publicado" : "Rascunho"}
-                </span>
-                {post.featured && (
-                  <span className="rounded-full bg-lime/50 px-2 py-0.5 text-xs font-medium text-ink">
-                    Destaque
-                  </span>
-                )}
-                <span className="text-xs text-muted">{post.category}</span>
-              </div>
-              <p className="mt-1 font-display text-base font-semibold">
-                {post.title}
-              </p>
-              <p className="text-xs text-muted">/blog/{post.slug}</p>
-            </div>
-            <div className="flex shrink-0 items-center gap-4 text-sm">
-              <Link
-                href={`/admin/posts/${post.id}/edit`}
-                className="font-display font-medium underline decoration-lime decoration-2 underline-offset-4"
-              >
-                Editar
-              </Link>
-              <DeletePostButton id={post.id} title={post.title} />
-            </div>
+      <div className="mt-10 grid gap-7 sm:grid-cols-3">
+        {stats.map((stat) => (
+          <div key={stat.label} className="border-t border-rule-strong pt-5">
+            <p className="font-display text-[2.2rem] font-medium leading-none tracking-[-0.03em]">
+              {stat.value}
+            </p>
+            <p className="mt-2 text-sm">{stat.label}</p>
           </div>
         ))}
-        {posts.length === 0 && (
-          <p className="text-sm text-muted">
-            Nenhum artigo ainda. Crie o primeiro.
-          </p>
-        )}
+      </div>
+
+      <div className="mt-14 grid gap-7 md:grid-cols-3">
+        {shortcuts.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="group border-t border-rule-strong pt-5"
+          >
+            <h2 className="text-[1.3rem] decoration-1 underline-offset-4 group-hover:underline">
+              {item.title}
+            </h2>
+            <p className="mt-2 text-sm">{item.text}</p>
+            <p className="mt-4 text-sm">Abrir ↗</p>
+          </Link>
+        ))}
       </div>
     </div>
   );

@@ -6,15 +6,14 @@ export const metadata: Metadata = {
 
 export default function PoliticaDePrivacidadePage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="font-display text-3xl font-semibold">
-        Política de privacidade
-      </h1>
-      <p className="mt-6 rounded-xl border border-dashed border-tinta/20 bg-azul-claro p-5 text-sm text-tinta/70">
+    <div className="mx-auto max-w-[1320px] px-6 pb-20 pt-12 md:px-12 md:pt-[72px]">
+      <p className="eyebrow">Legal</p>
+      <h1 className="my-6">Política de privacidade</h1>
+      <p className="max-w-2xl rounded-xl border border-dashed border-sand bg-sand-soft p-6 text-[15px]">
         [Conteúdo em elaboração. Esta página deve descrever quais dados são
-        coletados no site (ex: formulários, cookies), como são usados e
-        armazenados, e os direitos do titular conforme a LGPD. Recomendamos
-        revisão jurídica antes da publicação final.]
+        coletados no site (ex: inscrição na newsletter, cookies), como são
+        usados e armazenados, e os direitos do titular conforme a LGPD.
+        Recomendamos revisão jurídica antes da publicação final.]
       </p>
     </div>
   );

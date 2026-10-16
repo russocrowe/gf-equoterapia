@@ -17,11 +17,13 @@ export default function DeletePostButton({
       type="button"
       disabled={isPending}
       onClick={() => {
-        if (confirm(`Excluir o artigo "${title}"? Essa ação não pode ser desfeita.`)) {
+        if (
+          confirm(`Excluir a matéria "${title}"? Essa ação não pode ser desfeita.`)
+        ) {
           startTransition(() => deletePostAction(id));
         }
       }}
-      className="font-display font-medium text-red-700 underline decoration-2 underline-offset-4 disabled:opacity-50"
+      className="link-arrow text-red-800 disabled:opacity-50"
     >
       {isPending ? "Excluindo…" : "Excluir"}
     </button>

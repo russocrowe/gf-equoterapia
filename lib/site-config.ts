@@ -1,24 +1,44 @@
-// Dados reais do centro ainda não fornecidos: mantidos como placeholders
-// entre colchetes, no mesmo padrão do mockup, até serem substituídos.
-export const siteConfig = {
-  name: "Centro de Equoterapia GF",
-  shortName: "Centro de Equoterapia GF",
-  city: "[CIDADE – UF]",
+export const SITE_NAME = "Centro de Equoterapia GF";
+
+export type CenterInfo = {
+  address: string;
+  city: string;
+  whatsapp: string;
+  email: string;
+  instagram: string;
+  cnpj: string;
+  hours: string;
+};
+
+// Valores de fallback: aparecem enquanto o centro não preencher
+// "Editar site → Informações do centro" no painel.
+export const defaultCenterInfo: CenterInfo = {
   address: "[ENDEREÇO COMPLETO]",
-  addressCity: "[CIDADE – UF]",
-  whatsappNumber: "[TELEFONE]", // formato E.164 sem símbolos, ex: 5511999999999
-  whatsappDisplay: "[TELEFONE]",
+  city: "[CIDADE – UF]",
+  whatsapp: "[TELEFONE]",
   email: "[E-MAIL]",
   instagram: "[INSTAGRAM]",
-  instagramHandle: "@[INSTAGRAM]",
   cnpj: "[00.000.000/0000-00]",
   hours: "[HORÁRIO DE ATENDIMENTO]",
 };
 
-const WHATSAPP_DIGITS_PLACEHOLDER = "[TELEFONE]";
+export const centerInfoKeys = Object.keys(defaultCenterInfo) as (keyof CenterInfo)[];
 
-export function waLink(message: string): string {
-  const digits = siteConfig.whatsappNumber.replace(/\D/g, "");
-  const phone = digits || WHATSAPP_DIGITS_PLACEHOLDER;
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+export function instagramHandle(center: Pick<CenterInfo, "instagram">): string {
+  const handle = center.instagram.trim().replace(/^@/, "");
+  return handle ? `@${handle}` : "";
+}
+
+// Números brasileiros digitados sem DDI (10–11 dígitos) ganham o prefixo 55.
+export function whatsappDigits(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return "";
+  return digits.length <= 11 ? `55${digits}` : digits;
+}
+
+export function waLink(
+  center: Pick<CenterInfo, "whatsapp">,
+  message: string,
+): string {
+  return `https://wa.me/${whatsappDigits(center.whatsapp)}?text=${encodeURIComponent(message)}`;
 }

@@ -1,70 +1,94 @@
 import type { Metadata } from "next";
-import { Fraunces, Source_Sans_3 } from "next/font/google";
+import { Cormorant_Garamond, Manrope, DM_Sans } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/components/AuthProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { siteConfig } from "@/lib/site-config";
+import { getCenterInfo } from "@/lib/public-data";
+import { SITE_NAME } from "@/lib/site-config";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-});
-
-const sourceSans = Source_Sans_3({
-  variable: "--font-source-sans",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+});
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: `${siteConfig.name} — Equoterapia em ${siteConfig.city}`,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description:
-    "Equoterapia com equipe multiprofissional, em um ambiente acolhedor, para crianças, jovens e adultos.",
-  openGraph: {
-    type: "website",
-    locale: "pt_BR",
-    siteName: siteConfig.name,
-  },
-};
+// Só para o slogan "Cuidando de Vidas", como na camisa do uniforme.
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  style: ["italic"],
+});
 
-export default function RootLayout({
+const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+).trim();
+
+export async function generateMetadata(): Promise<Metadata> {
+  const center = await getCenterInfo();
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: `${SITE_NAME} — Equoterapia em ${center.city}`,
+      template: `%s | ${SITE_NAME}`,
+    },
+    description:
+      "Equoterapia que respeita cada pessoa, seu tempo e seu desenvolvimento. Equipe multiprofissional, cavalos preparados e um ambiente acolhedor.",
+    openGraph: {
+      type: "website",
+      locale: "pt_BR",
+      siteName: SITE_NAME,
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const center = await getCenterInfo();
+
   return (
-    <html
-      lang="pt-BR"
-      className={`${fraunces.variable} ${sourceSans.variable}`}
-    >
-      <body className="min-h-screen flex flex-col bg-areia text-tinta font-sans antialiased">
+    <html lang="pt-BR" className={`${manrope.variable} ${dmSans.variable} ${cormorant.variable}`}>
+      <body className="flex min-h-screen flex-col bg-paper font-sans text-ink antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "MedicalBusiness",
-              name: siteConfig.name,
+              name: SITE_NAME,
               description:
                 "Centro de equoterapia com equipe multiprofissional, dedicado ao desenvolvimento e bem-estar de crianças, jovens e adultos.",
               url: siteUrl,
+              logo: `${siteUrl}/logo-gf-transparent.png`,
               address: {
                 "@type": "PostalAddress",
-                streetAddress: siteConfig.address,
-                addressLocality: siteConfig.city,
+                streetAddress: center.address,
+                addressLocality: center.city,
               },
-              telephone: siteConfig.whatsappDisplay,
-              email: siteConfig.email,
+              telephone: center.whatsapp,
+              email: center.email,
             }),
           }}
         />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <a
+          href="#conteudo"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-navy focus:px-4 focus:py-2 focus:text-white"
+        >
+          Ir para o conteúdo
+        </a>
+        <AuthProvider>
+          <Header />
+          <main id="conteudo" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

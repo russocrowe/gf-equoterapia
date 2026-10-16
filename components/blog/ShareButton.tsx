@@ -17,7 +17,7 @@ export default function ShareButton({
         await navigator.share({ title, url });
         return;
       } catch {
-        // user cancelled or share failed — fall through to copy
+        // cancelado ou indisponível — cai para copiar o link
       }
     }
     try {
@@ -25,7 +25,7 @@ export default function ShareButton({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // clipboard unavailable — nothing more we can do silently
+      // clipboard indisponível
     }
   }
 
@@ -33,9 +33,9 @@ export default function ShareButton({
     <button
       type="button"
       onClick={handleShare}
-      className="w-full rounded-full border border-tinta/15 px-5 py-2.5 font-display text-sm font-semibold text-tinta transition-colors hover:border-azul hover:text-azul"
+      className="btn btn-outline w-full justify-center"
     >
-      {copied ? "Link copiado!" : "↗ Compartilhar artigo"}
+      {copied ? "Link copiado!" : "Compartilhar ↗"}
     </button>
   );
 }

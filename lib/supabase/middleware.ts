@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNext } from "@/lib/safe-redirect";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -29,18 +30,31 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
-  const isLoginRoute = request.nextUrl.pathname === "/admin/login";
+  const { pathname, search } = request.nextUrl;
 
-  if (isAdminRoute && !isLoginRoute && !user) {
+  // Endereço antigo do login.
+  if (pathname === "/admin/login") {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin/login";
+    url.pathname = "/entrar";
+    url.search = "";
     return NextResponse.redirect(url);
   }
 
-  if (isLoginRoute && user) {
+  const needsLogin =
+    pathname.startsWith("/admin") || pathname.startsWith("/perfil");
+
+  if (needsLogin && !user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin";
+    url.pathname = "/entrar";
+    url.search = `?next=${encodeURIComponent(pathname + search)}`;
+    return NextResponse.redirect(url);
+  }
+
+  if (pathname === "/entrar" && user) {
+    const next = safeNext(request.nextUrl.searchParams.get("next"));
+    const url = request.nextUrl.clone();
+    url.pathname = next.split("?")[0];
+    url.search = next.includes("?") ? `?${next.split("?").slice(1).join("?")}` : "";
     return NextResponse.redirect(url);
   }
 

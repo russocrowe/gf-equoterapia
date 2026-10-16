@@ -1,40 +1,47 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { logout } from "@/app/admin/actions";
+import AdminNav from "@/components/admin/AdminNav";
+import { isCurrentUserAdmin, requireUser } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Editar site",
+  robots: { index: false, follow: false },
+};
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  await requireUser("/admin");
+
+  if (!(await isCurrentUserAdmin())) {
+    return (
+      <div className="mx-auto max-w-[1320px] px-6 pb-24 pt-12 md:px-12 md:pt-[72px]">
+        <p className="eyebrow">Acesso restrito</p>
+        <h1 className="my-6">
+          Você ainda não pode <em>editar o site.</em>
+        </h1>
+        <p className="max-w-xl text-[15px]">
+          Sua conta está ativa, mas não tem permissão de administrador. Peça a
+          quem cuida do site para liberar o acesso.
+        </p>
+        <Link href="/perfil" className="btn btn-outline mt-8">
+          Ir para meu perfil
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-paper">
-      <div className="border-b border-ink/10 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <Link href="/admin" className="font-display text-sm font-semibold">
-            GF Equoterapia · Admin
-          </Link>
-          {user && (
-            <div className="flex items-center gap-4 text-sm text-muted">
-              <span>{user.email}</span>
-              <form action={logout}>
-                <button
-                  type="submit"
-                  className="font-display font-medium text-ink underline decoration-lime decoration-2 underline-offset-4"
-                >
-                  Sair
-                </button>
-              </form>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="mx-auto max-w-5xl px-6 py-10">{children}</div>
+    <div className="mx-auto grid max-w-[1320px] gap-10 px-6 pb-24 pt-10 md:px-12 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <aside>
+        <p className="eyebrow mb-5">Editar site</p>
+        <AdminNav />
+      </aside>
+      <div className="min-w-0">{children}</div>
     </div>
   );
 }

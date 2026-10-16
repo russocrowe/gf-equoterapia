@@ -1,3 +1,24 @@
+export const aboutPillars = [
+  {
+    title: "Equipe multiprofissional",
+    description: "Profissionais preparados para atuar de forma integrada.",
+  },
+  {
+    title: "Atendimento individualizado",
+    description:
+      "Cada praticante possui necessidades, objetivos e características próprias.",
+  },
+  {
+    title: "Cavalos preparados",
+    description:
+      "Animais selecionados e acompanhados para fazer parte do processo terapêutico.",
+  },
+  {
+    title: "Ambiente acolhedor",
+    description: "Um espaço pensado para praticantes e famílias.",
+  },
+];
+
 export const programs = [
   {
     number: "01",

@@ -1,94 +1,95 @@
 import Link from "next/link";
-import { siteConfig } from "@/lib/site-config";
+import Brand from "@/components/Brand";
+import { getCenterInfo } from "@/lib/public-data";
+import { instagramHandle } from "@/lib/site-config";
 
-export default function Footer() {
+const columnTitle =
+  "mb-4 text-xs font-bold uppercase tracking-[2px] text-gold";
+const footerLink =
+  "text-[13px] text-white/85 underline-offset-4 hover:text-white hover:underline";
+
+export default async function Footer() {
+  const center = await getCenterInfo();
+  const instagram = instagramHandle(center);
+
   return (
-    <footer className="bg-azul-escuro text-white">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-14 sm:grid-cols-4">
+    <footer className="on-dark bg-forest-deep text-white">
+      <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-10 px-6 pb-8 pt-14 sm:grid-cols-2 md:px-12 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div>
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 font-display text-sm font-semibold">
-              GF
-            </span>
-            <span className="font-display text-base font-semibold italic">
-              Centro de Equoterapia GF
-            </span>
-          </div>
-          <p className="mt-3 max-w-xs text-sm text-white/70">
-            Equoterapia com equipe multiprofissional, em um ambiente
-            acolhedor, para crianças, jovens e adultos.
+          <Brand size={110} tone="dark" />
+          <p className="tagline mt-5 text-[1.6rem] leading-none">
+            Cuidando de Vidas
+          </p>
+          <p className="mt-3 max-w-[16rem] text-[13px] text-white/80">
+            Cuidado, segurança e acolhimento a cada passo.
           </p>
         </div>
 
-        <div>
-          <h3 className="font-display text-xs font-semibold uppercase tracking-widest text-white/50">
-            Institucional
-          </h3>
-          <nav className="mt-4 flex flex-col gap-2 text-sm text-white/80">
-            <Link href="/sobre" className="hover:text-white">
-              Sobre o centro
-            </Link>
-            <Link href="/sobre#equipe" className="hover:text-white">
-              Equipe
-            </Link>
-            <Link href="/sobre#estrutura" className="hover:text-white">
-              Estrutura e cavalos
-            </Link>
-            <Link href="/#faq" className="hover:text-white">
-              Perguntas frequentes
-            </Link>
-            <Link href="/contato" className="hover:text-white">
-              Contato
-            </Link>
-          </nav>
-        </div>
-
-        <div>
-          <h3 className="font-display text-xs font-semibold uppercase tracking-widest text-white/50">
-            Conteúdo
-          </h3>
-          <nav className="mt-4 flex flex-col gap-2 text-sm text-white/80">
-            <Link href="/equoterapia" className="hover:text-white">
-              O que é equoterapia?
-            </Link>
-            <Link href="/condicoes" className="hover:text-white">
-              Condições tratadas
-            </Link>
-            <Link href="/blog" className="hover:text-white">
-              Blog
-            </Link>
-          </nav>
-        </div>
-
-        <div>
-          <h3 className="font-display text-xs font-semibold uppercase tracking-widest text-white/50">
+        <nav aria-label="Institucional" className="flex flex-col gap-2">
+          <h3 className={columnTitle}>Institucional</h3>
+          <Link href="/" className={footerLink}>
+            Início
+          </Link>
+          <Link href="/sobre" className={footerLink}>
+            Sobre nós
+          </Link>
+          <Link href="/sobre#equipe" className={footerLink}>
+            Equipe
+          </Link>
+          <Link href="/sobre#estrutura" className={footerLink}>
+            Estrutura e cavalos
+          </Link>
+          <Link href="/contato" className={footerLink}>
             Contato
-          </h3>
-          <div className="mt-4 flex flex-col gap-2 text-sm text-white/80">
+          </Link>
+        </nav>
+
+        <nav aria-label="Conteúdo" className="flex flex-col gap-2">
+          <h3 className={columnTitle}>Conteúdo</h3>
+          <Link href="/equoterapia" className={footerLink}>
+            Equoterapia
+          </Link>
+          <Link href="/condicoes" className={footerLink}>
+            Condições tratadas
+          </Link>
+          <Link href="/blog" className={footerLink}>
+            Matérias
+          </Link>
+          <Link href="/#faq" className={footerLink}>
+            Perguntas frequentes
+          </Link>
+        </nav>
+
+        <div className="flex flex-col gap-2 text-[13px] text-white/85">
+          <h3 className={columnTitle}>Contato</h3>
+          {(center.address || center.city) && (
             <span>
-              {siteConfig.address}
-              <br />
-              {siteConfig.city}
+              {center.address}
+              {center.address && center.city && <br />}
+              {center.city}
             </span>
-            <span>WhatsApp {siteConfig.whatsappDisplay}</span>
-            <span>{siteConfig.email}</span>
-            <span>{siteConfig.instagramHandle}</span>
-          </div>
+          )}
+          {center.whatsapp && <span>WhatsApp {center.whatsapp}</span>}
+          {center.email && <span>{center.email}</span>}
+          {instagram && <span>{instagram}</span>}
         </div>
       </div>
 
-      <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-5 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-white/15">
+        <div className="mx-auto flex max-w-[1320px] flex-col gap-2 px-6 py-5 text-[13px] text-white/75 sm:flex-row sm:items-center sm:justify-between md:px-12">
           <span>
-            © {new Date().getFullYear()} Centro de Equoterapia GF · CNPJ{" "}
-            {siteConfig.cnpj}
+            © {new Date().getFullYear()} Centro de Equoterapia GF
+            {center.cnpj && ` · CNPJ ${center.cnpj}`}
           </span>
-          <div className="flex gap-4">
-            <Link href="/politica-de-privacidade" className="hover:text-white">
+          <div className="flex flex-wrap gap-x-6 gap-y-1">
+            <Link href="/politica-de-privacidade" className="hover:text-white hover:underline">
               Política de privacidade
             </Link>
-            <Link href="/termos-de-uso" className="hover:text-white">
+            <Link href="/termos-de-uso" className="hover:text-white hover:underline">
               Termos de uso
+            </Link>
+            <Link href="/entrar" className="hover:text-white hover:underline">
+              Área da equipe
             </Link>
           </div>
         </div>
