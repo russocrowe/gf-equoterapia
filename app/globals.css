@@ -291,6 +291,28 @@
     color: var(--muted);
   }
 
+  /* Tags das matérias */
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid rgb(11 79 62 / 0.18);
+    background: var(--sage-soft);
+    color: var(--forest);
+    padding: 3px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  a.tag-chip:hover {
+    background: var(--forest);
+    color: #fff;
+  }
+
   /* Cartões */
   .card {
     background: var(--surface);
@@ -359,10 +381,10 @@
   }
 }
 
-/* Artigos */
+/* Artigos: texto corrido em preto; só os títulos (H1, H2, H3) ficam azuis. */
 .prose-article {
-  font-size: 1.06rem;
-  color: var(--body);
+  font-size: 1.08rem;
+  color: #111111;
 }
 
 .prose-article p {
@@ -370,16 +392,39 @@
   line-height: 1.8;
 }
 
+/* "H1" do texto: título de seção grande (publicado como <h2>) */
+.prose-article .article-h1 {
+  font-size: 2.15rem;
+  line-height: 1.15;
+  margin-top: 3.2rem;
+  margin-bottom: 1rem;
+  scroll-margin-top: 7rem;
+}
+
 .prose-article h2 {
-  font-size: 1.7rem;
+  font-size: 1.65rem;
   margin-top: 2.6rem;
   margin-bottom: 0.8rem;
   scroll-margin-top: 7rem;
 }
 
 .prose-article h3 {
+  font-size: 1.3rem;
   margin-top: 2rem;
   margin-bottom: 0.6rem;
+  scroll-margin-top: 7rem;
+}
+
+.prose-article img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 2rem auto;
+  border-radius: 16px;
+}
+
+.prose-article strong {
+  color: #000000;
 }
 
 .prose-article ul {
@@ -401,6 +446,7 @@
 
 .prose-article a {
   color: var(--forest);
+  font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
 }

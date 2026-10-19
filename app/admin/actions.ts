@@ -19,6 +19,8 @@ import {
 } from "@/lib/public-data";
 import { plainText, sanitizeRich } from "@/lib/rich-text";
 import { centerInfoKeys } from "@/lib/site-config";
+import { slugify } from "@/lib/slug";
+import { parseTags } from "@/lib/tags";
 import { createClient } from "@/lib/supabase/server";
 
 export type FormState = { ok: boolean; message: string } | null;
@@ -27,53 +29,120 @@ export type FormState = { ok: boolean; message: string } | null;
 // Matérias
 // ---------------------------------------------------------------------------
 
-function readPostInput(formData: FormData): PostInput {
+type PostIntent = "save" | "publish" | "unpublish";
+
+const MAX_TITLE = 120;
+const MAX_EXCERPT = 300;
+
+function readPostInput(
+  formData: FormData,
+  intent: PostIntent,
+  wasPublished: boolean,
+): { input: PostInput } | { error: string } {
+  const title = String(formData.get("title") ?? "").trim();
+  const slug = slugify(String(formData.get("slug") ?? "") || title);
+  const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "");
-  const readMinutesRaw = String(formData.get("read_minutes") ?? "").trim();
+  const category = String(formData.get("category") ?? "").trim();
+  const cover = String(formData.get("cover_image") ?? "").trim();
+
+  if (!title) return { error: "Escreva o título da matéria." };
+  if (title.length > MAX_TITLE) {
+    return { error: `O título passou de ${MAX_TITLE} caracteres. Encurte para o Google mostrar inteiro.` };
+  }
+  if (!slug) return { error: "O endereço da matéria (slug) ficou vazio." };
+  if (!excerpt) return { error: "Escreva o resumo: ele aparece na lista de matérias e no Google." };
+  if (excerpt.length > MAX_EXCERPT) {
+    return { error: `O resumo passou de ${MAX_EXCERPT} caracteres.` };
+  }
+  if (!content.trim()) return { error: "O texto da matéria está vazio." };
+  if (!category) return { error: "Escolha ou escreva uma categoria." };
+
+  // A capa só pode vir do armazenamento do próprio site.
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? "";
+  if (cover && !cover.startsWith(`${baseUrl}/storage/v1/object/public/`)) {
+    return { error: "Endereço de capa não permitido. Envie a imagem pelo editor." };
+  }
+
+  const published =
+    intent === "publish" ? true : intent === "unpublish" ? false : wasPublished;
 
   return {
-    slug: String(formData.get("slug") ?? "").trim(),
-    title: String(formData.get("title") ?? "").trim(),
-    excerpt: String(formData.get("excerpt") ?? "").trim(),
-    content,
-    category: String(formData.get("category") ?? "").trim(),
-    read_minutes: readMinutesRaw
-      ? Number(readMinutesRaw)
-      : estimateReadMinutes(content),
-    cover_image: String(formData.get("cover_image") ?? "").trim() || null,
-    featured: formData.get("featured") === "on",
-    published: formData.get("published") === "on",
-    author_name: String(formData.get("author_name") ?? "").trim() || null,
-    author_role: String(formData.get("author_role") ?? "").trim() || null,
-    reviewed_by: String(formData.get("reviewed_by") ?? "").trim() || null,
-    reviewed_role: String(formData.get("reviewed_role") ?? "").trim() || null,
+    input: {
+      slug,
+      title,
+      excerpt,
+      content,
+      category,
+      read_minutes: estimateReadMinutes(content),
+      cover_image: cover || null,
+      featured: formData.get("featured") === "on",
+      published,
+      author_name: String(formData.get("author_name") ?? "").trim() || null,
+      author_role: String(formData.get("author_role") ?? "").trim() || null,
+      reviewed_by: String(formData.get("reviewed_by") ?? "").trim() || null,
+      reviewed_role: String(formData.get("reviewed_role") ?? "").trim() || null,
+      tags: parseTags(String(formData.get("tags") ?? "")),
+    },
   };
 }
 
-function revalidatePosts(slug?: string) {
+function revalidatePosts(...slugs: (string | undefined)[]) {
   revalidatePath("/admin", "layout");
   revalidatePath("/equoterapia");
   revalidatePath("/");
-  if (slug) revalidatePath(`/blog/${slug}`);
+  for (const slug of slugs) if (slug) revalidatePath(`/blog/${slug}`);
 }
 
-export async function createPostAction(formData: FormData) {
+async function savePost(id: string | null, formData: FormData): Promise<FormState> {
   await assertAdmin();
+
+  const rawIntent = String(formData.get("intent") ?? "save");
+  const intent: PostIntent =
+    rawIntent === "publish" || rawIntent === "unpublish" ? rawIntent : "save";
+
+  const existing = id ? await getPostByIdAdmin(id) : null;
+  if (id && !existing) return { ok: false, message: "Essa matéria não existe mais." };
+
+  const parsed = readPostInput(formData, intent, existing?.published ?? false);
+  if ("error" in parsed) return { ok: false, message: parsed.error };
+
   const supabase = await createClient();
-  const input = readPostInput(formData);
-  await createPost(supabase, input);
-  revalidatePosts(input.slug);
-  redirect("/admin/materias");
+  try {
+    if (id) await updatePost(supabase, id, parsed.input, existing?.published ?? false);
+    else await createPost(supabase, parsed.input);
+  } catch (error) {
+    if ((error as { code?: string }).code === "23505") {
+      return {
+        ok: false,
+        message: "Esse endereço (slug) já está em uso por outra matéria. Escolha outro.",
+      };
+    }
+    return {
+      ok: false,
+      message: "Não foi possível salvar agora. Seu texto continua na tela; tente de novo em instantes.",
+    };
+  }
+
+  revalidatePosts(parsed.input.slug, existing?.slug);
+  const notice =
+    intent === "publish" ? "publicada" : intent === "unpublish" ? "rascunho" : "salva";
+  redirect(`/admin/materias?aviso=${notice}`);
 }
 
-export async function updatePostAction(id: string, formData: FormData) {
-  await assertAdmin();
-  const supabase = await createClient();
-  const existing = await getPostByIdAdmin(id);
-  const input = readPostInput(formData);
-  await updatePost(supabase, id, input, existing?.published ?? false);
-  revalidatePosts(input.slug);
-  redirect("/admin/materias");
+export async function createPostAction(
+  _previous: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return savePost(null, formData);
+}
+
+export async function updatePostAction(
+  id: string,
+  _previous: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return savePost(id, formData);
 }
 
 export async function deletePostAction(id: string) {

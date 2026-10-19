@@ -56,6 +56,7 @@ export default async function BlogPostPage({ params }: Props) {
             description: post.excerpt,
             datePublished: post.published_at,
             dateModified: post.updated_at,
+            ...(post.tags?.length ? { keywords: post.tags.join(", ") } : {}),
             author: post.author_name
               ? { "@type": "Person", name: post.author_name }
               : { "@type": "Organization", name: "Centro de Equoterapia GF" },
@@ -71,8 +72,26 @@ export default async function BlogPostPage({ params }: Props) {
             </Link>
             <p className="eyebrow mt-10">{post.category}</p>
             <h1 className="my-5">{post.title}</h1>
-            <p className="text-[17px]">{post.excerpt}</p>
-            <p className="mt-5 text-xs">{formatDate(post.published_at)}</p>
+            <p className="text-[1.1rem] leading-relaxed text-[#111]">
+              {post.excerpt}
+            </p>
+            <p className="mt-5 text-xs text-muted">
+              {formatDate(post.published_at)}
+            </p>
+            {post.tags?.length > 0 && (
+              <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Tags da matéria">
+                {post.tags.map((tag) => (
+                  <li key={tag}>
+                    <Link
+                      href={`/equoterapia?tag=${encodeURIComponent(tag)}`}
+                      className="tag-chip"
+                    >
+                      {tag}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </header>
 
           {cover && (
@@ -93,7 +112,7 @@ export default async function BlogPostPage({ params }: Props) {
             </figure>
           )}
 
-          <div className="pb-20 pt-10 text-[17px]">
+          <div className="pb-20 pt-10">
             <MarkdownRenderer content={post.content} />
           </div>
         </div>

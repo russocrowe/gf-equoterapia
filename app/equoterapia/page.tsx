@@ -8,6 +8,7 @@ import T from "@/components/editor/T";
 import { formatDate } from "@/lib/format";
 import { getFeaturedPost, getPublishedPosts } from "@/lib/posts";
 import { getSiteImages } from "@/lib/public-data";
+import { tagKey } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +20,30 @@ export const metadata: Metadata = {
 
 const container = "mx-auto max-w-[1240px] px-6 md:px-10";
 
-export default async function EquoterapiaPage() {
-  const [posts, featured, images] = await Promise.all([
+type Props = {
+  searchParams: Promise<{ tag?: string }>;
+};
+
+export default async function EquoterapiaPage({ searchParams }: Props) {
+  const { tag } = await searchParams;
+  const [allPosts, featuredPost, images] = await Promise.all([
     getPublishedPosts(),
     getFeaturedPost(),
     getSiteImages(),
   ]);
+
+  // Filtro por tag (?tag=...): mostra só as matérias com essa tag.
+  const activeKey = tag ? tagKey(tag) : "";
+  const posts = activeKey
+    ? allPosts.filter((post) => (post.tags ?? []).some((t) => tagKey(t) === activeKey))
+    : allPosts;
+  const activeLabel = activeKey
+    ? (allPosts.flatMap((post) => post.tags ?? []).find((t) => tagKey(t) === activeKey) ??
+      tag ??
+      "")
+    : "";
+  const featured = activeKey ? null : featuredPost;
+
   const fallbackCover = images.materia_padrao.url;
   const featuredCover = featured?.cover_image || fallbackCover;
 
@@ -39,6 +58,15 @@ export default async function EquoterapiaPage() {
           <T k="equo.eyebrow" as="p" className="eyebrow" />
           <T k="equo.title" as="h1" className="my-6" />
           <T k="equo.intro" as="p" className="lead max-w-xl" />
+          {activeKey && (
+            <p className="mt-6 flex flex-wrap items-center gap-3 text-sm">
+              <span className="text-muted">Mostrando matérias com a tag</span>
+              <span className="tag-chip">{activeLabel}</span>
+              <Link href="/equoterapia" className="link-arrow">
+                Ver todas
+              </Link>
+            </p>
+          )}
         </div>
       </section>
 
@@ -105,7 +133,9 @@ export default async function EquoterapiaPage() {
           </div>
         ) : (
           <p className="text-[15px] text-muted">
-            Em breve, novas matérias por aqui.
+            {activeKey
+              ? "Ainda não há matérias com essa tag."
+              : "Em breve, novas matérias por aqui."}
           </p>
         )}
       </section>

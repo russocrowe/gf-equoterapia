@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import PostForm from "@/components/admin/PostForm";
 import { updatePostAction } from "@/app/admin/actions";
 import { requireAdminPage } from "@/lib/auth";
-import { getPostByIdAdmin } from "@/lib/posts";
+import { buildSuggestions } from "@/lib/post-suggestions";
+import { getAllPostsAdmin, getPostByIdAdmin } from "@/lib/posts";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -12,7 +13,7 @@ type Props = {
 export default async function EditPostPage({ params }: Props) {
   const { id } = await params;
   await requireAdminPage(`/admin/materias/${id}`);
-  const post = await getPostByIdAdmin(id);
+  const [post, all] = await Promise.all([getPostByIdAdmin(id), getAllPostsAdmin()]);
 
   if (!post) notFound();
 
@@ -26,7 +27,7 @@ export default async function EditPostPage({ params }: Props) {
       <h1 className="my-6 text-[clamp(2rem,1.4rem+2vw,2.8rem)]">
         Editar <em>matéria</em>
       </h1>
-      <PostForm post={post} action={action} />
+      <PostForm post={post} action={action} suggestions={buildSuggestions(all)} />
     </div>
   );
 }

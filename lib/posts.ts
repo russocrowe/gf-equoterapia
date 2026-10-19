@@ -19,6 +19,7 @@ export type Post = {
   author_role: string | null;
   reviewed_by: string | null;
   reviewed_role: string | null;
+  tags: string[];
 };
 
 export type PostInput = {
@@ -35,6 +36,7 @@ export type PostInput = {
   author_role?: string | null;
   reviewed_by?: string | null;
   reviewed_role?: string | null;
+  tags?: string[];
 };
 
 export function estimateReadMinutes(content: string): number {
@@ -139,14 +141,30 @@ export async function getPostByIdAdmin(id: string): Promise<Post | null> {
   return data;
 }
 
+// Enquanto a migration das tags (0005) não foi aplicada no banco, a coluna não
+// existe: nesse caso salva a matéria sem as tags em vez de falhar.
+function isMissingTagsColumn(error: { code?: string; message?: string } | null) {
+  if (!error) return false;
+  return (
+    (error.code === "PGRST204" || error.code === "42703") &&
+    /tags/i.test(error.message ?? "")
+  );
+}
+
 export async function createPost(
   supabase: SupabaseClient,
   input: PostInput,
 ) {
-  const { error } = await supabase.from("posts").insert({
+  const row = {
     ...input,
     published_at: input.published ? new Date().toISOString() : null,
-  });
+  };
+  let { error } = await supabase.from("posts").insert(row);
+  if (isMissingTagsColumn(error)) {
+    const { tags, ...withoutTags } = row;
+    void tags;
+    ({ error } = await supabase.from("posts").insert(withoutTags));
+  }
   if (error) throw error;
 }
 
@@ -156,17 +174,18 @@ export async function updatePost(
   input: PostInput,
   wasPublished: boolean,
 ) {
-  const { error } = await supabase
-    .from("posts")
-    .update({
-      ...input,
-      published_at:
-        input.published && !wasPublished
-          ? new Date().toISOString()
-          : undefined,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id);
+  const row = {
+    ...input,
+    published_at:
+      input.published && !wasPublished ? new Date().toISOString() : undefined,
+    updated_at: new Date().toISOString(),
+  };
+  let { error } = await supabase.from("posts").update(row).eq("id", id);
+  if (isMissingTagsColumn(error)) {
+    const { tags, ...withoutTags } = row;
+    void tags;
+    ({ error } = await supabase.from("posts").update(withoutTags).eq("id", id));
+  }
   if (error) throw error;
 }
 
