@@ -49,7 +49,20 @@ const nextConfig: NextConfig = {
   // no código, mas redirecionam; para trazê-las de volta, apague a linha
   // correspondente e reponha o link em lib/nav.ts.
   async redirects() {
+    // Endereço oficial: sem www e sem o endereço provisório da Vercel.
+    const canonical = "https://equoterapiagf.com.br";
+    const oldHosts = [
+      "www.equoterapiagf.com.br",
+      "gf-equoterapia.vercel.app",
+    ];
+
     return [
+      ...oldHosts.map((host) => ({
+        source: "/:path*",
+        has: [{ type: "host" as const, value: host }],
+        destination: `${canonical}/:path*`,
+        permanent: true,
+      })),
       { source: "/blog", destination: "/equoterapia", permanent: false },
       { source: "/condicoes", destination: "/", permanent: false },
       { source: "/contato", destination: "/", permanent: false },
