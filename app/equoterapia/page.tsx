@@ -6,7 +6,7 @@ import PostCard from "@/components/PostCard";
 import Reveal from "@/components/Reveal";
 import T from "@/components/editor/T";
 import { formatDate } from "@/lib/format";
-import { getFeaturedPost, getPublishedPosts } from "@/lib/posts";
+import { getFeaturedPost, getPublishedPosts, visibleCategory } from "@/lib/posts";
 import { getSiteImages } from "@/lib/public-data";
 import { tagKey } from "@/lib/tags";
 
@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Equoterapia",
   description:
-    "Matérias sobre equoterapia, cuidado, acolhimento e os vínculos que fazem parte desse caminho.",
+    "Equoterapia: conhecimento, ciência e cuidado. Conteúdos sobre fundamentos, o papel do cavalo, a atuação interdisciplinar e temas ligados à saúde e ao bem-estar.",
 };
 
 const container = "mx-auto max-w-[1240px] px-6 md:px-10";
@@ -56,8 +56,8 @@ export default async function EquoterapiaPage({ searchParams }: Props) {
         />
         <div className={`${container} relative pb-12 pt-14 md:pt-20`}>
           <T k="equo.eyebrow" as="p" className="eyebrow" />
-          <T k="equo.title" as="h1" className="my-6" />
-          <T k="equo.intro" as="p" className="lead max-w-xl" />
+          <T k="equo.title" as="h1" className="my-6 max-w-3xl" />
+          <T k="equo.intro" as="p" className="lead max-w-3xl" />
           {activeKey && (
             <p className="mt-6 flex flex-wrap items-center gap-3 text-sm">
               <span className="text-muted">Mostrando matérias com a tag</span>
@@ -98,7 +98,8 @@ export default async function EquoterapiaPage({ searchParams }: Props) {
               <div className="flex flex-col justify-center p-8 lg:p-14">
                 <p className="flex items-center gap-2 text-[11.5px] font-bold uppercase tracking-[0.14em] text-forest">
                   <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold" />
-                  Leitura em destaque · {featured.category}
+                  Leitura em destaque
+                  {visibleCategory(featured) ? ` · ${visibleCategory(featured)}` : ""}
                 </p>
                 <h2 className="mb-4 mt-4 text-[clamp(1.6rem,1.2rem+1.4vw,2.2rem)] leading-[1.18]">
                   {featured.title}

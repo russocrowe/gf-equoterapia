@@ -80,7 +80,12 @@ export default async function AdminPostsPage({ searchParams }: Props) {
                     Destaque
                   </span>
                 )}
-                <span className="text-muted">{post.category}</span>
+                {post.category && (
+                  <span className="text-muted">
+                    {post.category}
+                    {post.show_category === false ? " (oculta no site)" : ""}
+                  </span>
+                )}
                 {post.published_at && (
                   <span className="text-muted">
                     · {formatDate(post.published_at)}

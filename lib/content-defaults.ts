@@ -5,58 +5,53 @@
 export const contentDefaults = {
   // Início
   "home.hero.eyebrow": "Centro de Equoterapia GF",
-  "home.hero.title":
-    "Equoterapia que respeita cada pessoa, <em>seu tempo e seu desenvolvimento.</em>",
+  // Chave nova: a antiga (home.hero.title) tinha um texto salvo sem as cores.
+  "home.hero.headline":
+    "Equoterapia: <em>onde o cuidado encontra a força do cavalo.</em>",
   "home.hero.text":
-    "No Centro de Equoterapia GF, o cavalo é parte de uma abordagem terapêutica individualizada, conduzida por uma equipe preparada para acompanhar cada praticante com cuidado, segurança e acolhimento.",
+    "No Centro de Equoterapia GF, cada praticante é acolhido em sua individualidade. Com uma equipe interdisciplinar, o cavalo participa de um trabalho terapêutico que valoriza o desenvolvimento, os vínculos e as possibilidades de cada pessoa.",
   "home.hero.cta": "Saiba mais",
-  "home.trust.1": "Equipe multiprofissional",
+  "home.trust.1": "Equipe interdisciplinar especializada",
   "home.trust.2": "Método reconhecido pela Lei nº 13.830/2019",
-  "home.trust.3": "Atendimento para todas as idades",
+  "home.trust.3": "Cuidado individualizado em todas as idades",
 
   "home.about.eyebrow": "Sobre o GF",
-  "home.about.title":
-    "Um espaço onde o cuidado acontece <em>a passo de cavalo.</em>",
-  "home.pillar.1.title": "Equipe multiprofissional",
-  "home.pillar.1.text": "Profissionais preparados para atuar de forma integrada.",
-  "home.pillar.2.title": "Atendimento individualizado",
-  "home.pillar.2.text":
-    "Cada praticante possui necessidades, objetivos e características próprias.",
-  "home.pillar.3.title": "Cavalos preparados",
-  "home.pillar.3.text":
-    "Animais selecionados e acompanhados para fazer parte do processo terapêutico.",
-  "home.pillar.4.title": "Ambiente acolhedor",
-  "home.pillar.4.text": "Um espaço pensado para praticantes e famílias.",
 
-  "home.posts.title": "Tudo sobre <em>EQUOTERAPIA</em>",
-  "home.posts.link": "Ver todas as matérias",
+  // Texto compartilhado: aparece em "Sobre o GF" (início) e na página Sobre nós.
+  "about.title": "Um espaço onde o cuidado acontece <em>a passo de cavalo.</em>",
+  "about.text":
+    "No Centro de Equoterapia GF, o cuidado vai além de cada sessão. Está na atenção aos detalhes, no respeito à individualidade e na construção de vínculos entre praticantes, profissionais e cavalos. Cada pessoa é acolhida com sua própria história, suas necessidades e possibilidades, em um ambiente que valoriza o desenvolvimento humano, a segurança e o bem-estar.",
+  "about.pillar.1.title": "Equipe interdisciplinar",
+  "about.pillar.1.text":
+    "Profissionais de diferentes áreas que atuam de forma integrada, unindo conhecimentos para um acompanhamento responsável e individualizado.",
+  "about.pillar.2.title": "Atendimento individualizado",
+  "about.pillar.2.text":
+    "Cada praticante possui sua própria história, necessidades e objetivos. Por isso, as sessões são planejadas respeitando seu ritmo e suas possibilidades.",
+  "about.pillar.3.title": "Cavalos preparados",
+  "about.pillar.3.text":
+    "Cavalos selecionados, treinados e acompanhados para participar das sessões, com atenção à segurança, ao manejo adequado e ao bem-estar animal.",
+  "about.pillar.4.title": "Ambiente acolhedor",
+  "about.pillar.4.text":
+    "Um espaço de cuidado, convivência e conexão com a natureza, onde praticantes e famílias são recebidos com respeito, atenção e sensibilidade.",
+
+  "home.posts.title": "Conhecimento que aproxima pessoas <em>da Equoterapia</em>",
+  "home.posts.text":
+    "Um espaço dedicado à informação e ao conhecimento sobre Equoterapia. Conheça seus fundamentos, como funciona, o papel do cavalo e os diferentes temas relacionados à saúde, ao desenvolvimento humano e ao bem-estar, por meio de conteúdos educativos, acessíveis e responsáveis.",
+  "home.posts.link": "Ver todos os artigos",
 
   // Sobre nós
   "sobre.eyebrow": "Sobre a GF Equoterapia",
-  "sobre.title": "Um olhar atento.<br>Um cuidado <em>por inteiro.</em>",
-  "sobre.intro":
-    "Acreditamos que acolher começa por conhecer a pessoa, respeitar sua história e construir uma relação de confiança com sua família.",
-  "sobre.principles.title": "O que orienta nosso cuidado",
-  "sobre.principle.1.title": "A criança no centro",
-  "sobre.principle.1.text":
-    "Olhar para além das expectativas e reconhecer a singularidade, as preferências e os limites de cada criança.",
-  "sobre.principle.2.title": "Diálogo com a família",
-  "sobre.principle.2.text":
-    "Valorizar quem está presente no dia a dia e abrir espaço para perguntas, escuta e troca de experiências.",
-  "sobre.principle.3.title": "Respeito em cada encontro",
-  "sobre.principle.3.text":
-    "Cuidar da relação com as pessoas, com os cavalos e com o ambiente, com atenção e responsabilidade.",
   "sobre.band.title": "Conhecimento também <em>é uma forma de cuidar.</em>",
   "sobre.band.text":
-    "Nosso blog reúne reflexões sobre acolhimento, família e vínculos para tornar essa conversa mais próxima e acessível.",
-  "sobre.band.link": "Explore as matérias de Equoterapia",
+    "Conheça conteúdos sobre Equoterapia, seus fundamentos, o papel do cavalo e temas relacionados à saúde, ao desenvolvimento humano e ao bem-estar, apresentados de forma acessível e responsável.",
+  "sobre.band.link": "Explore nosso Blog",
 
   // Equoterapia
-  "equo.eyebrow": "Equoterapia",
-  "equo.title": "Tudo sobre <em>Equoterapia.</em>",
+  "equo.eyebrow": "Blog",
+  "equo.title": "Equoterapia: <em>conhecimento, ciência e cuidado.</em>",
   "equo.intro":
-    "Matérias sobre cuidado, acolhimento e os vínculos que fazem parte desse caminho.",
-  "equo.all.title": "Para ler com calma",
+    "Um espaço dedicado a ampliar o conhecimento sobre Equoterapia. Explore conteúdos sobre seus fundamentos, o papel do cavalo, a atuação interdisciplinar e temas relacionados à saúde, à reabilitação, ao desenvolvimento humano e ao bem-estar. Informações acessíveis e responsáveis para aproximar a sociedade dessa abordagem terapêutica.",
+  "equo.all.title": "Explore nossos artigos",
 
   // Rodapé (aparece em todas as páginas)
   "footer.slogan": "Cuidando de Vidas",

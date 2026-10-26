@@ -19,6 +19,7 @@ type Draft = {
   title: string;
   slug: string;
   category: string;
+  showCategory: boolean;
   excerpt: string;
   content: string;
   coverImage: string;
@@ -35,6 +36,7 @@ function initialDraft(post?: Post): Draft {
     title: post?.title ?? "",
     slug: post?.slug ?? "",
     category: post?.category ?? "",
+    showCategory: post?.show_category !== false,
     excerpt: post?.excerpt ?? "",
     content: post?.content ?? "",
     coverImage: post?.cover_image ?? "",
@@ -302,7 +304,9 @@ export default function PostForm({
           <img src={draft.coverImage} alt="" className="aspect-video w-full object-cover" />
         )}
         <div className="p-6 md:p-8">
-          <p className="eyebrow">{draft.category || "Categoria"}</p>
+          {draft.showCategory && draft.category.trim() && (
+            <p className="eyebrow">{draft.category}</p>
+          )}
           <h2 className="mb-3 mt-4 text-[1.9rem] leading-[1.15]">
             {draft.title || "Título da matéria"}
           </h2>
@@ -679,10 +683,9 @@ export default function PostForm({
               Organização
             </h3>
             <label className={label}>
-              Categoria
+              Categoria <span className="font-normal text-muted">(opcional)</span>
               <input
                 name="category"
-                required
                 list="category-options"
                 value={draft.category}
                 onChange={(e) => set("category", e.target.value)}
@@ -695,6 +698,17 @@ export default function PostForm({
                   <option key={c} value={c} />
                 ))}
               </datalist>
+            </label>
+
+            <label className="flex items-center gap-2.5 text-sm font-medium">
+              <input
+                type="checkbox"
+                name="show_category"
+                checked={draft.showCategory}
+                onChange={(e) => set("showCategory", e.target.checked)}
+                className="h-4 w-4 accent-[var(--forest)]"
+              />
+              Mostrar a categoria no site
             </label>
 
             <div className={label}>

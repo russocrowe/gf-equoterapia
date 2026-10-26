@@ -71,6 +71,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 export type SiteImage = { url: string; alt: string; caption: string };
 export type SiteImages = {
   hero: SiteImage;
+  espaco: SiteImage;
   sobre: SiteImage;
   materia_padrao: SiteImage;
 };
@@ -80,6 +81,11 @@ const emptyImages: SiteImages = {
     url: "",
     alt: "Cena ilustrativa de uma criança de capacete ao lado de um cavalo, acompanhada por uma adulta",
     caption: "Imagem ilustrativa",
+  },
+  espaco: {
+    url: "",
+    alt: "O espaço do Centro de Equoterapia GF",
+    caption: "",
   },
   sobre: {
     url: "",
@@ -102,6 +108,7 @@ export async function getSiteImages(): Promise<SiteImages> {
   );
   const images: SiteImages = {
     hero: { ...emptyImages.hero },
+    espaco: { ...emptyImages.espaco },
     sobre: { ...emptyImages.sobre },
     materia_padrao: { ...emptyImages.materia_padrao },
   };

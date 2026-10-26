@@ -20,6 +20,8 @@ export type Post = {
   reviewed_by: string | null;
   reviewed_role: string | null;
   tags: string[];
+  // Pode faltar até a migration 0006 rodar; ausente equivale a "mostrar".
+  show_category?: boolean | null;
 };
 
 export type PostInput = {
@@ -37,7 +39,15 @@ export type PostInput = {
   reviewed_by?: string | null;
   reviewed_role?: string | null;
   tags?: string[];
+  show_category?: boolean;
 };
+
+// Categoria que deve aparecer no site (vazia quando está escondida ou em branco).
+export function visibleCategory(
+  post: Pick<Post, "category" | "show_category">,
+): string {
+  return post.show_category === false ? "" : (post.category ?? "").trim();
+}
 
 export function estimateReadMinutes(content: string): number {
   const words = content.trim().split(/\s+/).filter(Boolean).length;
@@ -141,14 +151,30 @@ export async function getPostByIdAdmin(id: string): Promise<Post | null> {
   return data;
 }
 
-// Enquanto a migration das tags (0005) não foi aplicada no banco, a coluna não
-// existe: nesse caso salva a matéria sem as tags em vez de falhar.
-function isMissingTagsColumn(error: { code?: string; message?: string } | null) {
-  if (!error) return false;
-  return (
-    (error.code === "PGRST204" || error.code === "42703") &&
-    /tags/i.test(error.message ?? "")
-  );
+// Colunas opcionais criadas por migrations posteriores (0005 tags, 0006
+// show_category). Enquanto uma delas não existe no banco, salva sem ela em vez
+// de falhar.
+const OPTIONAL_COLUMNS = ["tags", "show_category"];
+
+type DbError = { code?: string; message?: string } | null;
+
+function missingOptionalColumn(error: DbError): string | null {
+  if (!error || (error.code !== "PGRST204" && error.code !== "42703")) return null;
+  return OPTIONAL_COLUMNS.find((column) => (error.message ?? "").includes(column)) ?? null;
+}
+
+async function saveWithoutMissingColumns(
+  row: Record<string, unknown>,
+  run: (row: Record<string, unknown>) => PromiseLike<{ error: DbError }>,
+): Promise<DbError> {
+  const current = { ...row };
+  for (let attempt = 0; attempt <= OPTIONAL_COLUMNS.length; attempt++) {
+    const { error } = await run(current);
+    const missing = missingOptionalColumn(error);
+    if (!missing || !(missing in current)) return error;
+    delete current[missing];
+  }
+  return null;
 }
 
 export async function createPost(
@@ -159,12 +185,9 @@ export async function createPost(
     ...input,
     published_at: input.published ? new Date().toISOString() : null,
   };
-  let { error } = await supabase.from("posts").insert(row);
-  if (isMissingTagsColumn(error)) {
-    const { tags, ...withoutTags } = row;
-    void tags;
-    ({ error } = await supabase.from("posts").insert(withoutTags));
-  }
+  const error = await saveWithoutMissingColumns(row, (r) =>
+    supabase.from("posts").insert(r),
+  );
   if (error) throw error;
 }
 
@@ -180,12 +203,9 @@ export async function updatePost(
       input.published && !wasPublished ? new Date().toISOString() : undefined,
     updated_at: new Date().toISOString(),
   };
-  let { error } = await supabase.from("posts").update(row).eq("id", id);
-  if (isMissingTagsColumn(error)) {
-    const { tags, ...withoutTags } = row;
-    void tags;
-    ({ error } = await supabase.from("posts").update(withoutTags).eq("id", id));
-  }
+  const error = await saveWithoutMissingColumns(row, (r) =>
+    supabase.from("posts").update(r).eq("id", id),
+  );
   if (error) throw error;
 }
 

@@ -2,6 +2,7 @@ import SiteImageEditor, {
   type SiteImageRow,
 } from "@/components/admin/SiteImageEditor";
 import { requireAdminPage } from "@/lib/auth";
+import { siteImageKeys, siteImageMeta } from "@/lib/site-image-keys";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminImagesPage() {
@@ -13,7 +14,21 @@ export default async function AdminImagesPage() {
     .select("key, label, description, url, alt, caption")
     .order("key");
 
-  const rows = (data ?? []) as SiteImageRow[];
+  const stored = (data ?? []) as SiteImageRow[];
+  // Fotos novas ainda não têm linha no banco: aparecem aqui e são criadas no primeiro envio.
+  const rows = [
+    ...stored,
+    ...siteImageKeys
+      .filter((key) => !stored.some((row) => row.key === key))
+      .map<SiteImageRow>((key) => ({
+        key,
+        label: siteImageMeta[key].label,
+        description: siteImageMeta[key].description,
+        url: "",
+        alt: "",
+        caption: "",
+      })),
+  ];
 
   return (
     <div>

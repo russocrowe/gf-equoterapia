@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { formatDate } from "@/lib/format";
-import { getPostBySlug } from "@/lib/posts";
+import { getPostBySlug, visibleCategory } from "@/lib/posts";
 import { jsonLd } from "@/lib/json-ld";
 import { getSiteImages } from "@/lib/public-data";
 
@@ -70,8 +70,12 @@ export default async function BlogPostPage({ params }: Props) {
             <Link href="/equoterapia" className="link-arrow">
               ← Voltar para Equoterapia
             </Link>
-            <p className="eyebrow mt-10">{post.category}</p>
-            <h1 className="my-5">{post.title}</h1>
+            {visibleCategory(post) ? (
+              <p className="eyebrow mt-10">{visibleCategory(post)}</p>
+            ) : null}
+            <h1 className={visibleCategory(post) ? "my-5" : "mb-5 mt-10"}>
+              {post.title}
+            </h1>
             <p className="text-[1.1rem] leading-relaxed text-[#111]">
               {post.excerpt}
             </p>

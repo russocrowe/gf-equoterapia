@@ -76,6 +76,7 @@ const centerDone: Record<keyof CenterInfo, string> = {"whatsapp":"WhatsApp infor
 
 const imageDone: Record<string, string> = {
   hero: "Foto principal enviada",
+  espaco: "Foto do nosso espaço enviada",
   sobre: "Foto do Sobre nós enviada",
   materia_padrao: "Capa padrão das matérias definida",
 };
@@ -85,6 +86,11 @@ const imageTasks: { key: string; title: string; hint: string }[] = [
     key: "hero",
     title: "Enviar a foto principal da página inicial",
     hint: "É a primeira imagem que o visitante vê. Prefira uma foto real do centro.",
+  },
+  {
+    key: "espaco",
+    title: "Enviar a foto do nosso espaço (página inicial)",
+    hint: "Aparece em “Sobre o GF”. Uma foto real do centro passa mais confiança.",
   },
   {
     key: "sobre",

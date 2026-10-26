@@ -8,12 +8,12 @@ import { getSiteImages } from "@/lib/public-data";
 export const metadata: Metadata = {
   title: "Sobre nós",
   description:
-    "Um olhar atento, um cuidado por inteiro: conheça o que orienta o cuidado no Centro de Equoterapia GF.",
+    "Conheça o Centro de Equoterapia GF: equipe interdisciplinar, atendimento individualizado, cavalos preparados e um ambiente acolhedor.",
 };
 
 const container = "mx-auto max-w-[1240px] px-6 md:px-10";
 
-const principles = [1, 2, 3] as const;
+const pillars = [1, 2, 3, 4] as const;
 
 export default async function SobrePage() {
   const images = await getSiteImages();
@@ -27,8 +27,8 @@ export default async function SobrePage() {
         />
         <div className={`${container} relative pb-12 pt-14 md:pt-20`}>
           <T k="sobre.eyebrow" as="p" className="eyebrow" />
-          <T k="sobre.title" as="h1" className="my-6 max-w-3xl" />
-          <T k="sobre.intro" as="p" className="lead max-w-2xl" />
+          <T k="about.title" as="h1" className="my-6 max-w-3xl" />
+          <T k="about.text" as="p" className="lead max-w-3xl" />
         </div>
       </section>
 
@@ -48,32 +48,29 @@ export default async function SobrePage() {
           />
         </figure>
 
-        <div className="lg:pt-4">
-          <T k="sobre.principles.title" as="h2" className="mb-8 text-[1.9rem]" />
-          <ol className="flex flex-col">
-            {principles.map((n) => (
-              <li
-                key={n}
-                className="grid grid-cols-[2.75rem_1fr] gap-4 border-t border-rule py-6 first:border-t-2 first:border-gold"
+        <ol className="flex flex-col lg:pt-2">
+          {pillars.map((n) => (
+            <li
+              key={n}
+              className="grid grid-cols-[2.75rem_1fr] gap-4 border-t border-rule py-6 first:border-t-2 first:border-gold"
+            >
+              <span
+                aria-hidden
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-sage-soft font-display text-sm font-bold text-forest"
               >
-                <span
-                  aria-hidden
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-sage-soft font-display text-sm font-bold text-forest"
-                >
-                  {String(n).padStart(2, "0")}
-                </span>
-                <div>
-                  <T k={`sobre.principle.${n}.title`} as="h3" className="text-[1.15rem]" />
-                  <T
-                    k={`sobre.principle.${n}.text`}
-                    as="p"
-                    className="mt-2 text-[15px] leading-relaxed text-muted"
-                  />
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
+                {String(n).padStart(2, "0")}
+              </span>
+              <div>
+                <T k={`about.pillar.${n}.title`} as="h3" className="text-[1.15rem]" />
+                <T
+                  k={`about.pillar.${n}.text`}
+                  as="p"
+                  className="mt-2 text-[15px] leading-relaxed text-muted"
+                />
+              </div>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <section className={`${container} pb-24`}>
@@ -90,10 +87,7 @@ export default async function SobrePage() {
                 as="p"
                 className="max-w-md text-[16px] leading-relaxed text-white/90"
               />
-              <Link
-                href="/equoterapia"
-                className="mt-6 inline-block border-b-2 border-gold pb-1 text-[15px] font-semibold text-white hover:border-white"
-              >
+              <Link href="/equoterapia" className="btn btn-light mt-7">
                 <T k="sobre.band.link" /> <span aria-hidden>→</span>
               </Link>
             </div>

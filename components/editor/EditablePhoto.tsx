@@ -6,6 +6,7 @@ import { useEditor } from "@/components/editor/EditorProvider";
 import SitePhoto from "@/components/SitePhoto";
 import { createClient } from "@/lib/supabase/client";
 import type { SiteImage } from "@/lib/public-data";
+import type { SiteImageKey } from "@/lib/site-image-keys";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
@@ -21,7 +22,7 @@ export default function EditablePhoto({
   sizes,
   showCaption = true,
 }: {
-  imageKey: "hero" | "sobre" | "materia_padrao";
+  imageKey: SiteImageKey;
   image: SiteImage;
   className?: string;
   priority?: boolean;

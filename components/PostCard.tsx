@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
 import { formatDate } from "@/lib/format";
-import type { Post } from "@/lib/posts";
+import { visibleCategory, type Post } from "@/lib/posts";
 
 export default function PostCard({
   post,
@@ -12,6 +12,7 @@ export default function PostCard({
   fallbackCover?: string;
 }) {
   const cover = post.cover_image || fallbackCover;
+  const category = visibleCategory(post);
 
   return (
     <article className="h-full">
@@ -36,11 +37,13 @@ export default function PostCard({
           )}
         </div>
         <div className="flex flex-1 flex-col p-6">
-          <p className="flex items-center gap-2 text-[11.5px] font-bold uppercase tracking-[0.14em] text-forest">
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold" />
-            {post.category}
-          </p>
-          <h3 className="mt-3 text-[1.2rem] leading-snug">{post.title}</h3>
+          {category && (
+            <p className="mb-3 flex items-center gap-2 text-[11.5px] font-bold uppercase tracking-[0.14em] text-forest">
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold" />
+              {category}
+            </p>
+          )}
+          <h3 className="text-[1.2rem] leading-snug">{post.title}</h3>
           <p className="mt-3 text-[15px] leading-relaxed text-muted">
             {post.excerpt}
           </p>

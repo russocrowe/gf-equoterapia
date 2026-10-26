@@ -19,6 +19,7 @@ import {
 } from "@/lib/public-data";
 import { plainText, sanitizeRich } from "@/lib/rich-text";
 import { centerInfoKeys } from "@/lib/site-config";
+import { isSiteImageKey, siteImageMeta } from "@/lib/site-image-keys";
 import { slugify } from "@/lib/slug";
 import { parseTags } from "@/lib/tags";
 import { createClient } from "@/lib/supabase/server";
@@ -56,7 +57,6 @@ function readPostInput(
     return { error: `O resumo passou de ${MAX_EXCERPT} caracteres.` };
   }
   if (!content.trim()) return { error: "O texto da matéria está vazio." };
-  if (!category) return { error: "Escolha ou escreva uma categoria." };
 
   // A capa só pode vir do armazenamento do próprio site.
   const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? "";
@@ -83,6 +83,7 @@ function readPostInput(
       reviewed_by: String(formData.get("reviewed_by") ?? "").trim() || null,
       reviewed_role: String(formData.get("reviewed_role") ?? "").trim() || null,
       tags: parseTags(String(formData.get("tags") ?? "")),
+      show_category: formData.get("show_category") === "on",
     },
   };
 }
@@ -198,8 +199,6 @@ export async function saveCenterInfoAction(
 // Imagens do site
 // ---------------------------------------------------------------------------
 
-const IMAGE_KEYS = ["hero", "sobre", "materia_padrao"];
-
 export async function saveSiteImageAction(input: {
   key: string;
   url: string;
@@ -208,7 +207,7 @@ export async function saveSiteImageAction(input: {
 }): Promise<FormState> {
   await assertAdmin();
 
-  if (!IMAGE_KEYS.includes(input.key)) {
+  if (!isSiteImageKey(input.key)) {
     return { ok: false, message: "Imagem desconhecida." };
   }
 
@@ -219,14 +218,28 @@ export async function saveSiteImageAction(input: {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const values = {
+    url: input.url,
+    alt: input.alt.trim().slice(0, 300),
+    caption: input.caption.trim().slice(0, 120),
+  };
+  const updated = await supabase
     .from("site_images")
-    .update({
-      url: input.url,
-      alt: input.alt.trim().slice(0, 300),
-      caption: input.caption.trim().slice(0, 120),
-    })
-    .eq("key", input.key);
+    .update(values)
+    .eq("key", input.key)
+    .select("key");
+  let error = updated.error;
+
+  // Foto nova (ainda sem linha no banco): cria a linha na primeira gravação.
+  if (!error && updated.data?.length === 0) {
+    const meta = siteImageMeta[input.key];
+    ({ error } = await supabase.from("site_images").insert({
+      key: input.key,
+      label: meta.label,
+      description: meta.description,
+      ...values,
+    }));
+  }
 
   if (error) {
     return { ok: false, message: "Não foi possível salvar a imagem agora." };
