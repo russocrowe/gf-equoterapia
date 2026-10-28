@@ -69,7 +69,7 @@
 
   .arch-frame {
     position: relative;
-    width: min(100%, 440px);
+    width: min(100%, 510px);
     margin-inline: auto;
   }
 

@@ -43,7 +43,7 @@ export default async function Home() {
         <div aria-hidden className="pointer-events-none absolute bottom-24 right-[8%] h-[26px] w-[26px] rounded-full bg-sun" />
 
         <div
-          className={`${container} relative grid items-center gap-14 pb-14 pt-12 md:pt-20 lg:grid-cols-[1.05fr_.95fr] lg:gap-20`}
+          className={`${container} relative grid items-center gap-14 pb-14 pt-12 md:pt-20 lg:grid-cols-[1fr_1fr] lg:gap-16`}
         >
           <div className="flex flex-col items-start">
             <T k="home.hero.eyebrow" as="p" className="eyebrow eyebrow-pill pill-shoe anim-rise" />
@@ -74,7 +74,7 @@ export default async function Home() {
               image={images.hero}
               priority
               showCaption={false}
-              sizes="(min-width: 1024px) 440px, 100vw"
+              sizes="(min-width: 1024px) 510px, 100vw"
               className="relative aspect-[4/5] w-full rounded-[999px_999px_26px_26px]"
             />
             <div className="anim-float absolute -left-7 bottom-9 z-[2] flex max-w-[280px] items-center gap-3.5 rounded-2xl border border-rule bg-white py-3.5 pl-3.5 pr-[18px] shadow-[0_18px_34px_-20px_rgb(0_2_89/0.45)] max-md:left-2">
