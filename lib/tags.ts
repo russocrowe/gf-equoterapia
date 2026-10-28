@@ -1,6 +1,6 @@
 // Tags (etiquetas) das matérias.
 export const MAX_TAGS = 8;
-export const MAX_TAG_LENGTH = 30;
+export const MAX_TAG_LENGTH = 60;
 
 export function normalizeTag(raw: string): string {
   return raw
