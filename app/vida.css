@@ -1,0 +1,364 @@
+/* ---------------------------------------------------------------------------
+   Vida: cores do uniforme, formas e movimento leve.
+   Carregado depois de globals.css (que declara as camadas do Tailwind).
+   --------------------------------------------------------------------------- */
+@layer components {
+  .stripe {
+    height: 6px;
+    background: linear-gradient(
+      90deg,
+      var(--forest) 0 25%,
+      var(--sun) 25% 50%,
+      var(--coral) 50% 75%,
+      var(--navy) 75% 100%
+    );
+  }
+
+  /* Ícones desenhados em arquivo SVG, pintados com a cor do texto */
+  .horse-mark {
+    display: inline-block;
+    aspect-ratio: 664 / 478;
+    background-color: currentColor;
+    -webkit-mask: url(/marca-cavalo.svg) center / contain no-repeat;
+    mask: url(/marca-cavalo.svg) center / contain no-repeat;
+  }
+
+  /* Rótulo de seção em pílula */
+  .eyebrow.eyebrow-pill {
+    display: inline-flex;
+    gap: 10px;
+    background: var(--sage-soft);
+    color: var(--forest);
+    padding: 7px 16px 7px 10px;
+    border-radius: 999px;
+    font-family: var(--font-montserrat), sans-serif;
+    font-size: 11.5px;
+  }
+
+  .eyebrow.eyebrow-pill::before {
+    width: 24px;
+    height: 24px;
+    flex: none;
+    border-radius: 0;
+    background: var(--forest);
+    -webkit-mask: var(--pill-icon) center / contain no-repeat;
+    mask: var(--pill-icon) center / contain no-repeat;
+  }
+
+  .pill-shoe { --pill-icon: url(/icones/ferradura.svg); }
+  .pill-stable { --pill-icon: url(/icones/estabulo.svg); }
+  .pill-horse { --pill-icon: url(/marca-cavalo.svg); }
+  .eyebrow.eyebrow-pill.pill-horse::before { width: 34px; }
+  .eyebrow.eyebrow-pill.pill-white { background: #fff; }
+
+  /* Abertura */
+  .hero-bg {
+    background: linear-gradient(180deg, #fff6e6 0%, var(--paper) 78%);
+  }
+
+  .hero-title em {
+    background: linear-gradient(
+      transparent 84%,
+      rgb(243 198 74 / 0.55) 84% 95%,
+      transparent 95%
+    );
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding-inline: 0.06em;
+  }
+
+  .arch-frame {
+    position: relative;
+    width: min(100%, 440px);
+    margin-inline: auto;
+  }
+
+  .arch-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translate(16px, 16px);
+    border: 1.5px solid var(--gold);
+    border-radius: 999px 999px 26px 26px;
+    pointer-events: none;
+  }
+
+  @media (max-width: 820px) {
+    .arch-frame::before {
+      transform: translate(10px, 10px);
+    }
+  }
+
+  /* Divisor com passos de cavalo */
+  .trail {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    color: var(--gold);
+  }
+
+  .trail > span {
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: currentColor;
+    -webkit-mask: url(/icones/ferradura.svg) center / contain no-repeat;
+    mask: url(/icones/ferradura.svg) center / contain no-repeat;
+    animation: step 0.45s ease both;
+  }
+
+  .trail > span:nth-child(odd) { transform: translateY(-6px) rotate(-8deg); }
+  .trail > span:nth-child(even) { transform: translateY(6px) rotate(8deg); }
+  .trail > span:nth-child(3n + 1) { color: var(--coral); }
+  .trail > span:nth-child(3n + 2) { color: #d9a521; }
+  .trail > span:nth-child(3n) { color: var(--forest); }
+  .trail > span:nth-child(1), .trail > span:nth-child(9) { opacity: 0.35; }
+  .trail > span:nth-child(2), .trail > span:nth-child(8) { opacity: 0.55; }
+  .trail > span:nth-child(3), .trail > span:nth-child(7) { opacity: 0.8; }
+  .trail > span:nth-child(2) { animation-delay: 0.1s; }
+  .trail > span:nth-child(3) { animation-delay: 0.2s; }
+  .trail > span:nth-child(4) { animation-delay: 0.3s; }
+  .trail > span:nth-child(5) { animation-delay: 0.4s; }
+  .trail > span:nth-child(6) { animation-delay: 0.5s; }
+  .trail > span:nth-child(7) { animation-delay: 0.6s; }
+  .trail > span:nth-child(8) { animation-delay: 0.7s; }
+  .trail > span:nth-child(9) { animation-delay: 0.8s; }
+
+  /* Pilares do cuidado */
+  .pillar-row {
+    margin-inline: -16px;
+    padding-inline: 16px;
+    border-radius: 20px;
+    background-image: linear-gradient(var(--rule), var(--rule));
+    background-size: calc(100% - 32px) 1px;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .pillar-row:hover {
+    background-color: #fff;
+    background-image: none;
+    transform: translateX(6px);
+  }
+
+  .pillar-row:hover .pillar-ico > * {
+    animation: wiggle 0.6s ease;
+  }
+
+  @media (max-width: 820px) {
+    .pillar-row {
+      margin-inline: 0;
+      padding-inline: 0;
+      background-size: 100% 1px;
+    }
+  }
+
+  .photo-frame {
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 6px var(--butter),
+      0 22px 40px -24px rgb(0 2 89 / 0.5);
+    transform: rotate(-1.2deg);
+  }
+
+  @media (max-width: 820px) {
+    .photo-frame { transform: none; }
+  }
+
+  /* Cores por cartão */
+  .tone-0 { --tone-bg: var(--butter); --tone-ink: var(--butter-ink); }
+  .tone-1 { --tone-bg: var(--coral-soft); --tone-ink: var(--coral-ink); }
+  .tone-2 { --tone-bg: var(--sage-soft); --tone-ink: var(--forest); }
+  .tone-3 { --tone-bg: var(--sky-soft); --tone-ink: var(--sky-ink); }
+
+  /* Cartão de matéria */
+  .pc {
+    position: relative;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 24px;
+    border-bottom: 7px solid var(--tone-bg, var(--butter));
+    background: #fff;
+    box-shadow: 0 28px 38px -28px color-mix(in srgb, var(--tone-ink, var(--navy)) 70%, transparent);
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .pc:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 34px 44px -26px color-mix(in srgb, var(--tone-ink, var(--navy)) 80%, transparent);
+  }
+
+  .pc-cover { position: relative; display: block; overflow: hidden; }
+
+  .pc-cover img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .pc:hover .pc-cover img { transform: scale(1.04); }
+
+  .pc-date {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--tone-bg, var(--butter));
+    color: var(--tone-ink, var(--navy));
+    font-family: var(--font-montserrat), sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 8px 14px -8px rgb(0 2 89 / 0.5);
+  }
+
+  .pc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .pc-tags span {
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: var(--tone-bg, var(--butter));
+    color: var(--tone-ink, var(--navy));
+    font-family: var(--font-montserrat), sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.04em;
+  }
+
+  .clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Seção do blog */
+  .know-bg { background: linear-gradient(180deg, #fff3d8 0%, #ffe9c8 100%); }
+
+  .rail-nav {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    border: 1.5px solid var(--navy);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--navy);
+    box-shadow: 0 10px 18px -12px rgb(0 2 89 / 0.6);
+    cursor: pointer;
+    transition:
+      background-color 0.18s ease,
+      color 0.18s ease,
+      transform 0.18s ease,
+      opacity 0.18s ease;
+  }
+
+  .rail-nav:hover:not(:disabled) {
+    background: var(--coral);
+    border-color: var(--coral);
+    color: #fff;
+    transform: scale(1.06);
+  }
+
+  .rail-nav:disabled { opacity: 0.35; cursor: default; }
+
+  .rail-track {
+    scroll-padding-inline: 10px;
+    display: flex;
+    gap: 26px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    margin-inline: -10px;
+    padding: 18px 10px 26px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rail-track::-webkit-scrollbar { display: none; }
+  .rail-track:focus-visible { outline: 3px solid var(--forest); outline-offset: 2px; border-radius: 16px; }
+  .rail-slide { flex: 0 0 min(352px, 84%); scroll-snap-align: start; }
+
+  .rail-progress { position: relative; flex: 1 1 220px; height: 34px; }
+
+  .rail-progress::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    border-top: 3px dotted rgb(0 2 89 / 0.28);
+    transform: translateY(-1px);
+  }
+
+  .rail-shoe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--coral-ink);
+    box-shadow: 0 6px 12px -6px rgb(0 2 89 / 0.5);
+    transition: left 0.15s linear;
+  }
+
+  .rail-shoe > span {
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: currentColor;
+    -webkit-mask: url(/icones/ferradura.svg) center / contain no-repeat;
+    mask: url(/icones/ferradura.svg) center / contain no-repeat;
+  }
+
+  .shoe-mark {
+    display: inline-block;
+    background-color: currentColor;
+    -webkit-mask: url(/icones/ferradura.svg) center / contain no-repeat;
+    mask: url(/icones/ferradura.svg) center / contain no-repeat;
+  }
+
+  /* Movimento */
+  .anim-rise { animation: rise 0.7s ease both; }
+  .anim-float { animation: float 5.5s ease-in-out infinite; }
+
+  .chip-wiggle:hover > span:first-child { animation: wiggle 0.6s ease; }
+
+  .btn span[aria-hidden="true"] {
+    display: inline-block;
+    transition: transform 0.18s ease;
+  }
+
+  .btn:hover span[aria-hidden="true"] { transform: translateX(4px); }
+}
+
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+@keyframes step { from { opacity: 0; transform: scale(0.5); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .rail-track { scroll-behavior: auto; }
+}

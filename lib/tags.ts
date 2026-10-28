@@ -35,3 +35,11 @@ export function parseTags(value: string | string[] | null | undefined): string[]
   }
   return tags;
 }
+
+// Tags para mostrar nos cartões: curtas, sem a genérica "equoterapia".
+export function displayTags(tags: string[] | null | undefined, max = 2): string[] {
+  const short = (tags ?? []).filter(
+    (tag) => tag.length <= 24 && tagKey(tag) !== "equoterapia",
+  );
+  return short.slice(0, max);
+}

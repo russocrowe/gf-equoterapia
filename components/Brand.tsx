@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const LOGO = { width: 1028, height: 654 };
+const LOGO = { width: 600, height: 434 };
 
 export default function Brand({
   size = 132,
@@ -20,15 +20,15 @@ export default function Brand({
       className="flex items-center gap-4"
     >
       <Image
-        src={onDark ? "/logo-gf-white.png" : "/logo-gf-transparent.png"}
-        alt="Haras GF — logo oficial"
+        src={onDark ? "/logo-centro-gf-branco.png" : "/logo-centro-gf.png"}
+        alt=""
         width={LOGO.width}
         height={LOGO.height}
         priority
         style={{ width: size, height: "auto" }}
       />
       <span
-        className={`max-w-[7.5rem] font-display text-[17px] font-semibold leading-[1.4] tracking-[-0.02em] ${
+        className={`max-w-[8.5rem] font-display text-[13.5px] font-semibold leading-[1.4] tracking-[0.01em] ${
           onDark ? "text-white" : ""
         }`}
       >

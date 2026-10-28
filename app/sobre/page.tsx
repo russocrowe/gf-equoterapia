@@ -1,6 +1,7 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import Reveal from "@/components/Reveal";
+import KnowledgeBand from "@/components/KnowledgeBand";
+import Pillars from "@/components/Pillars";
+import Trail from "@/components/Trail";
 import EditablePhoto from "@/components/editor/EditablePhoto";
 import T from "@/components/editor/T";
 import { getSiteImages } from "@/lib/public-data";
@@ -11,89 +12,53 @@ export const metadata: Metadata = {
     "Conheça o Centro de Equoterapia GF: equipe interdisciplinar, atendimento individualizado, cavalos preparados e um ambiente acolhedor.",
 };
 
-const container = "mx-auto max-w-[1240px] px-6 md:px-10";
-
-const pillars = [1, 2, 3, 4] as const;
+const container = "mx-auto max-w-[1160px] px-6 md:px-10";
 
 export default async function SobrePage() {
   const images = await getSiteImages();
 
   return (
     <div>
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-40 -top-48 h-[30rem] w-[30rem] rounded-full bg-sage-soft blur-3xl"
-        />
-        <div className={`${container} relative pb-12 pt-14 md:pt-20`}>
-          <T k="sobre.eyebrow" as="p" className="eyebrow" />
-          <T k="about.title" as="h1" className="my-6 max-w-3xl" />
-          <T k="about.text" as="p" className="lead max-w-3xl" />
+      <section className="hero-bg relative overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute -left-36 -top-44 h-[480px] w-[480px] rounded-full bg-sage-soft max-md:h-72 max-md:w-72" />
+        <div aria-hidden className="pointer-events-none absolute -right-24 top-10 h-72 w-72 rounded-full bg-[#f8e2bb]/75 max-md:hidden" />
+        <div aria-hidden className="pointer-events-none absolute right-[18%] top-24 hidden h-14 w-14 rounded-full bg-coral-soft md:block" />
+        <div aria-hidden className="pointer-events-none absolute bottom-10 right-[30%] h-[22px] w-[22px] rounded-full bg-sun" />
+        <div className={`${container} relative flex flex-col items-start pb-14 pt-14 md:pt-20`}>
+          <T k="sobre.eyebrow" as="p" className="eyebrow eyebrow-pill pill-stable anim-rise" />
+          <T
+            k="about.title"
+            as="h1"
+            className="anim-rise my-6 max-w-3xl [animation-delay:.08s]"
+          />
+          <T
+            k="about.text"
+            as="p"
+            className="lead anim-rise max-w-3xl [animation-delay:.16s]"
+          />
         </div>
       </section>
 
       <section
-        className={`${container} grid items-start gap-14 pb-20 pt-6 lg:grid-cols-2 lg:gap-16`}
+        className={`${container} grid items-start gap-14 pb-20 pt-8 lg:grid-cols-2 lg:gap-24`}
       >
-        <figure className="relative">
-          <div
-            aria-hidden
-            className="absolute -bottom-4 -left-4 h-full w-full rounded-2xl bg-sage-soft md:-bottom-5 md:-left-5"
-          />
+        <figure className="photo-frame lg:sticky lg:top-36">
           <EditablePhoto
             imageKey="sobre"
             image={images.sobre}
-            sizes="(min-width: 1024px) 600px, 100vw"
-            className="relative aspect-[600/480] w-full rounded-2xl shadow-[0_30px_60px_-30px_rgb(0_2_89/0.4)]"
+            showCaption={false}
+            sizes="(min-width: 1024px) 560px, 100vw"
+            className="aspect-[600/480] w-full rounded-none"
           />
         </figure>
-
-        <ol className="flex flex-col lg:pt-2">
-          {pillars.map((n) => (
-            <li
-              key={n}
-              className="grid grid-cols-[2.75rem_1fr] gap-4 border-t border-rule py-6 first:border-t-2 first:border-gold"
-            >
-              <span
-                aria-hidden
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-sage-soft font-display text-sm font-bold text-forest"
-              >
-                {String(n).padStart(2, "0")}
-              </span>
-              <div>
-                <T k={`about.pillar.${n}.title`} as="h3" className="text-[1.15rem]" />
-                <T
-                  k={`about.pillar.${n}.text`}
-                  as="p"
-                  className="mt-2 text-[15px] leading-relaxed text-muted"
-                />
-              </div>
-            </li>
-          ))}
-        </ol>
+        <Pillars />
       </section>
 
-      <section className={`${container} pb-24`}>
-        <Reveal>
-          <div className="on-dark relative grid items-center gap-8 overflow-hidden rounded-3xl bg-navy p-8 text-white md:grid-cols-2 md:p-14">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-gold/15 blur-2xl"
-            />
-            <T k="sobre.band.title" as="h2" className="relative max-w-sm" />
-            <div className="relative">
-              <T
-                k="sobre.band.text"
-                as="p"
-                className="max-w-md text-[16px] leading-relaxed text-white/90"
-              />
-              <Link href="/equoterapia" className="btn btn-light mt-7">
-                <T k="sobre.band.link" /> <span aria-hidden>→</span>
-              </Link>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <div className="pb-14">
+        <Trail />
+      </div>
+
+      <KnowledgeBand />
     </div>
   );
 }

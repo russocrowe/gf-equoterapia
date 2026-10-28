@@ -11,6 +11,7 @@ export const contentDefaults = {
   "home.hero.text":
     "No Centro de Equoterapia GF, cada praticante é acolhido em sua individualidade. Com uma equipe interdisciplinar, o cavalo participa de um trabalho terapêutico que valoriza o desenvolvimento, os vínculos e as possibilidades de cada pessoa.",
   "home.hero.cta": "Saiba mais",
+  "home.hero.cta2": "Ler os artigos",
   "home.trust.1": "Equipe interdisciplinar especializada",
   "home.trust.2": "Método reconhecido pela Lei nº 13.830/2019",
   "home.trust.3": "Cuidado individualizado em todas as idades",
@@ -34,6 +35,7 @@ export const contentDefaults = {
   "about.pillar.4.text":
     "Um espaço de cuidado, convivência e conexão com a natureza, onde praticantes e famílias são recebidos com respeito, atenção e sensibilidade.",
 
+  "home.posts.eyebrow": "Blog",
   "home.posts.title": "Conhecimento que aproxima pessoas <em>da Equoterapia</em>",
   "home.posts.text":
     "Um espaço dedicado à informação e ao conhecimento sobre Equoterapia. Conheça seus fundamentos, como funciona, o papel do cavalo e os diferentes temas relacionados à saúde, ao desenvolvimento humano e ao bem-estar, por meio de conteúdos educativos, acessíveis e responsáveis.",

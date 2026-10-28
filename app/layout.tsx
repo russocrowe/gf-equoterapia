@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope, DM_Sans } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Montserrat,
+  Source_Sans_3,
+  Source_Serif_4,
+} from "next/font/google";
 import "./globals.css";
+import "./vida.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import EditBar from "@/components/editor/EditBar";
 import { EditorProvider } from "@/components/editor/EditorProvider";
@@ -10,13 +16,24 @@ import { jsonLd } from "@/lib/json-ld";
 import { getCenterInfo } from "@/lib/public-data";
 import { SITE_NAME, filledValue } from "@/lib/site-config";
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+// Títulos e texto das matérias: serifa com itálico de verdade.
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
   subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+// Texto corrido.
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+});
+
+// Menus, botões, rótulos e a marca.
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
 });
 
@@ -59,7 +76,7 @@ export default async function RootLayout({
   const center = await getCenterInfo();
 
   return (
-    <html lang="pt-BR" className={`${manrope.variable} ${dmSans.variable} ${cormorant.variable}`}>
+    <html lang="pt-BR" className={`${sourceSerif.variable} ${sourceSans.variable} ${montserrat.variable} ${cormorant.variable}`}>
       <body className="flex min-h-screen flex-col bg-paper font-sans text-body antialiased">
         <script
           type="application/ld+json"
@@ -71,7 +88,7 @@ export default async function RootLayout({
               description:
                 "Centro de equoterapia com equipe multiprofissional, dedicado ao desenvolvimento e bem-estar de crianças, jovens e adultos.",
               url: siteUrl,
-              logo: `${siteUrl}/logo-gf-transparent.png`,
+              logo: `${siteUrl}/logo-centro-gf.png`,
               address: {
                 "@type": "PostalAddress",
                 streetAddress: filledValue(center.address) || undefined,

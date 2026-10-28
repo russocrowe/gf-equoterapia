@@ -16,6 +16,7 @@ export default async function Footer() {
 
   return (
     <footer className="on-dark bg-forest-deep text-white">
+      <div className="stripe" aria-hidden />
       <div className="mx-auto grid max-w-[1320px] items-start gap-10 px-6 pb-8 pt-12 md:px-12 lg:grid-cols-[1.3fr_1fr_1fr_auto]">
         <div>
           <Brand size={110} tone="dark" />
