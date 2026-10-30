@@ -34,6 +34,8 @@ const nextConfig: NextConfig = {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
   images: {
+    // 75 é o padrão; 90 é usado nas fotos grandes do site (abertura, espaço, Sobre nós).
+    qualities: [75, 90],
     remotePatterns: supabaseHost
       ? [
           {

@@ -26,6 +26,7 @@ export default function SitePhoto({
       width={1536}
       height={1024}
       priority={priority}
+      quality={90}
       sizes={sizes}
       className={`object-cover ${className}`}
     />

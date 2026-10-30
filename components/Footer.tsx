@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import Brand from "@/components/Brand";
 import T from "@/components/editor/T";
@@ -78,21 +77,28 @@ export default async function Footer() {
           />
           <div className="flex flex-wrap items-center gap-4">
             <div className="rounded-2xl bg-white p-3 shadow-[0_14px_26px_-18px_rgb(0_0_0/0.7)]">
-              <Image
-                src="/parceiros/ande-brasil.png"
+              {/* Sem next/image: as logos vão como estão, sem recompressão */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/parceiros/ande-brasil.webp"
                 alt="ANDE-Brasil, Associação Nacional de Equoterapia"
-                width={600}
-                height={600}
-                className="h-[96px] w-auto"
+                width={410}
+                height={608}
+                loading="lazy"
+                decoding="async"
+                className="h-[104px] w-auto"
               />
             </div>
             <div className="rounded-2xl bg-white p-3 shadow-[0_14px_26px_-18px_rgb(0_0_0/0.7)]">
-              <Image
-                src="/parceiros/equo-abqm.jpg"
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/parceiros/equo-abqm.webp"
                 alt="Equo ABQM, Quarto de Milha"
-                width={532}
-                height={248}
-                className="h-[96px] w-auto"
+                width={881}
+                height={398}
+                loading="lazy"
+                decoding="async"
+                className="h-[104px] w-auto"
               />
             </div>
           </div>
