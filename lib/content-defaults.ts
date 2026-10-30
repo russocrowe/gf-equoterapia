@@ -57,6 +57,7 @@ export const contentDefaults = {
 
   // Rodapé (aparece em todas as páginas)
   "footer.slogan": "Cuidando de Vidas",
+  "footer.partners": "Filiações e parcerias",
   "footer.tagline": "Cuidado, segurança e acolhimento a cada passo.",
 } as const;
 

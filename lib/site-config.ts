@@ -35,6 +35,12 @@ export function instagramHandle(center: Pick<CenterInfo, "instagram">): string {
   return handle ? `@${handle}` : "";
 }
 
+// Endereço do perfil no Instagram (aceita o @ ou só o nome do perfil).
+export function instagramUrl(center: Pick<CenterInfo, "instagram">): string {
+  const handle = center.instagram.trim().replace(/^@/, "").replace(/[^A-Za-z0-9._]/g, "");
+  return handle ? `https://www.instagram.com/${handle}/` : "";
+}
+
 // Números brasileiros digitados sem DDI (10–11 dígitos) ganham o prefixo 55.
 export function whatsappDigits(raw: string): string {
   const digits = raw.replace(/\D/g, "");

@@ -1,8 +1,14 @@
+import Image from "next/image";
 import Link from "next/link";
 import Brand from "@/components/Brand";
 import T from "@/components/editor/T";
+import { InstagramIcon } from "@/components/icons";
 import { getCenterInfo } from "@/lib/public-data";
-import { filledValue as filled, instagramHandle } from "@/lib/site-config";
+import {
+  filledValue as filled,
+  instagramHandle,
+  instagramUrl,
+} from "@/lib/site-config";
 import { navLinks } from "@/lib/nav";
 
 export default async function Footer() {
@@ -11,8 +17,8 @@ export default async function Footer() {
     [filled(center.address), filled(center.city)].filter(Boolean).join(" · "),
     filled(center.whatsapp) && `WhatsApp ${filled(center.whatsapp)}`,
     filled(center.email),
-    filled(center.instagram) && instagramHandle(center),
   ].filter(Boolean);
+  const instagram = filled(center.instagram) ? center : null;
 
   return (
     <footer className="on-dark bg-forest-deep text-white">
@@ -22,6 +28,18 @@ export default async function Footer() {
           <Brand size={110} tone="dark" />
           <T k="footer.slogan" as="p" className="tagline mt-5 text-[1.7rem] leading-none" />
           <T k="footer.tagline" as="p" className="mt-3 max-w-[18rem] text-[14px] text-white/80" />
+          {instagram && (
+            <a
+              href={instagramUrl(instagram)}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Instagram ${instagramHandle(instagram)} (abre em outra aba)`}
+              className="mt-5 inline-flex items-center gap-2.5 rounded-full border border-white/25 py-2 pl-3 pr-4 font-display text-[13px] font-semibold text-white transition-colors hover:border-gold hover:text-gold"
+            >
+              <InstagramIcon className="h-5 w-5" />
+              {instagramHandle(instagram)}
+            </a>
+          )}
         </div>
 
         <nav aria-label="Rodapé" className="flex flex-col gap-2 lg:items-start">
@@ -48,6 +66,37 @@ export default async function Footer() {
         >
           Área da equipe
         </Link>
+      </div>
+
+      {/* Filiações e parcerias */}
+      <div className="border-t border-white/15">
+        <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-x-8 gap-y-5 px-6 py-7 md:px-12">
+          <T
+            k="footer.partners"
+            as="p"
+            className="font-display text-[11px] font-bold uppercase tracking-[0.16em] text-gold"
+          />
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="rounded-2xl bg-white p-3 shadow-[0_14px_26px_-18px_rgb(0_0_0/0.7)]">
+              <Image
+                src="/parceiros/ande-brasil.png"
+                alt="ANDE-Brasil, Associação Nacional de Equoterapia"
+                width={600}
+                height={600}
+                className="h-[96px] w-auto"
+              />
+            </div>
+            <div className="rounded-2xl bg-white p-3 shadow-[0_14px_26px_-18px_rgb(0_0_0/0.7)]">
+              <Image
+                src="/parceiros/equo-abqm.jpg"
+                alt="Equo ABQM, Quarto de Milha"
+                width={532}
+                height={248}
+                className="h-[96px] w-auto"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="border-t border-white/15">
