@@ -3,9 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { saveSiteImageAction } from "@/app/admin/actions";
+import ImageFramer, { type FramedImage } from "@/components/ImageFramer";
+import { fetchImageBlob, MAX_RAW_BYTES } from "@/lib/image-upload";
+import { isFramable, isSiteImageKey, siteImageFrames } from "@/lib/site-image-keys";
 import { createClient } from "@/lib/supabase/client";
 
-const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_DIRECT_BYTES = 5 * 1024 * 1024;
 
 export type SiteImageRow = {
   key: string;
@@ -25,6 +28,8 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
   const [caption, setCaption] = useState(row.caption);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<Message>(null);
+  const [framing, setFraming] = useState<Blob | null>(null);
+  const frame = isSiteImageKey(row.key) ? siteImageFrames[row.key] : null;
 
   async function persist(next: { url: string; alt: string; caption: string }) {
     setBusy(true);
@@ -36,28 +41,14 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
     return result.ok;
   }
 
-  async function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setMessage({ ok: false, text: "Escolha um arquivo de imagem (JPG, PNG ou WebP)." });
-      return;
-    }
-    if (file.size > MAX_BYTES) {
-      setMessage({ ok: false, text: "A imagem precisa ter no máximo 5 MB." });
-      return;
-    }
-
+  async function upload(blob: Blob, extension: string) {
     setBusy(true);
     setMessage(null);
     const supabase = createClient();
-    const extension = (file.name.split(".").pop() || "jpg").toLowerCase();
     const path = `${row.key}/${Date.now()}.${extension}`;
     const { error } = await supabase.storage
       .from("site-images")
-      .upload(path, file, { upsert: false, contentType: file.type });
+      .upload(path, blob, { upsert: false, contentType: blob.type || "image/webp" });
 
     if (error) {
       setBusy(false);
@@ -68,6 +59,49 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
     const { data } = supabase.storage.from("site-images").getPublicUrl(path);
     const saved = await persist({ url: data.publicUrl, alt, caption });
     if (saved) setUrl(data.publicUrl);
+  }
+
+  async function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setMessage({ ok: false, text: "Escolha um arquivo de imagem (JPG, PNG ou WebP)." });
+      return;
+    }
+    if (frame && isFramable(file)) {
+      if (file.size > MAX_RAW_BYTES) {
+        setMessage({ ok: false, text: "A imagem passou de 20 MB. Escolha uma menor." });
+        return;
+      }
+      setMessage(null);
+      setFraming(file);
+      return;
+    }
+    if (file.size > MAX_DIRECT_BYTES) {
+      setMessage({ ok: false, text: "A imagem precisa ter no máximo 5 MB." });
+      return;
+    }
+    await upload(file, (file.name.split(".").pop() || "jpg").toLowerCase());
+  }
+
+  async function onFramed(result: FramedImage) {
+    await upload(result.blob, result.extension);
+    setFraming(null);
+  }
+
+  async function reframe() {
+    if (!url) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      setFraming(await fetchImageBlob(url));
+    } catch {
+      setMessage({ ok: false, text: "Não consegui abrir a foto atual. Envie a foto de novo." });
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function handleRemove() {
@@ -110,6 +144,16 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
               disabled={busy}
             />
           </label>
+          {url && frame && (
+            <button
+              type="button"
+              onClick={() => void reframe()}
+              disabled={busy}
+              className="btn btn-outline !px-4 !py-2.5 text-xs disabled:opacity-60"
+            >
+              Enquadrar
+            </button>
+          )}
           {url && (
             <button
               type="button"
@@ -120,7 +164,7 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
               Remover
             </button>
           )}
-          <span className="text-xs text-muted">JPG, PNG ou WebP — até 5 MB.</span>
+          <span className="text-xs text-muted">JPG, PNG ou WebP. Você enquadra a foto antes de publicar.</span>
         </div>
 
         <label className="flex flex-col gap-1.5 text-sm font-semibold text-ink">
@@ -166,6 +210,18 @@ export default function SiteImageEditor({ row }: { row: SiteImageRow }) {
           Salvar textos
         </button>
       </div>
+      {framing && frame && (
+        <ImageFramer
+          file={framing}
+          title={`Enquadrar: ${frame.hint}`}
+          aspect={frame.aspect}
+          shape={frame.shape}
+          outputWidth={frame.outputWidth}
+          confirmLabel="Usar e publicar"
+          onConfirm={onFramed}
+          onCancel={() => setFraming(null)}
+        />
+      )}
     </section>
   );
 }

@@ -5,13 +5,21 @@ import type { FormState } from "@/app/admin/actions";
 import ArticleBody from "@/components/ArticleBody";
 import CoverUploader from "@/components/admin/post/CoverUploader";
 import TagInput from "@/components/admin/post/TagInput";
-import { uploadPostImage } from "@/lib/image-upload";
+import ImageFramer, { type AspectOption, type FramedImage } from "@/components/ImageFramer";
+import { MAX_RAW_BYTES, uploadPostBlob, uploadPostImage } from "@/lib/image-upload";
+import { isFramable } from "@/lib/site-image-keys";
 import type { Post } from "@/lib/posts";
 import { slugify } from "@/lib/slug";
 import { createClient } from "@/lib/supabase/client";
 
 const label = "flex flex-col gap-1.5 text-sm font-semibold text-ink";
 const hint = "text-xs font-normal text-muted";
+const INLINE_FORMATS: AspectOption[] = [
+  { label: "Foto inteira", value: null },
+  { label: "Deitada 16:9", value: 16 / 9 },
+  { label: "Deitada 4:3", value: 4 / 3 },
+  { label: "Quadrada", value: 1 },
+];
 const TITLE_MAX = 70;
 const EXCERPT_MAX = 160;
 
@@ -107,6 +115,7 @@ export default function PostForm({
   const [recovered, setRecovered] = useState<Draft | null>(null);
   const [imageBusy, setImageBusy] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [framing, setFraming] = useState<File | null>(null);
   const [state, formAction, pending] = useActionState<FormState, FormData>(action, null);
 
   const textarea = useRef<HTMLTextAreaElement>(null);
@@ -240,22 +249,50 @@ export default function PostForm({
     });
   }
 
+  // Coloca a imagem no texto, na posição onde o cursor estava.
+  function placeImage(url: string) {
+    const alt = (window.prompt(
+      "Descreva a imagem em poucas palavras (para quem usa leitor de tela e para o Google):",
+      "",
+    ) ?? "")
+      .replace(/[\[\]\n]/g, " ")
+      .trim();
+    const at = Math.min(imageCursor.current, draft.content.length);
+    const snippet = `\n\n![${alt}](${url})\n\n`;
+    set("content", draft.content.slice(0, at) + snippet + draft.content.slice(at));
+  }
+
+  // GIF e SVG seguem direto; as demais fotos passam pelo enquadramento antes de subir.
   async function insertImage(file: File) {
-    setImageBusy(true);
     setImageError(null);
+    if (isFramable(file)) {
+      if (file.size > MAX_RAW_BYTES) {
+        setImageError("A imagem passou de 20 MB. Escolha uma menor.");
+        return;
+      }
+      setFraming(file);
+      return;
+    }
+    setImageBusy(true);
     try {
       const { url } = await uploadPostImage(file, "inline");
-      const alt = (window.prompt(
-        "Descreva a imagem em poucas palavras (para quem usa leitor de tela e para o Google):",
-        "",
-      ) ?? "")
-        .replace(/[\[\]\n]/g, " ")
-        .trim();
-      const at = Math.min(imageCursor.current, draft.content.length);
-      const snippet = `\n\n![${alt}](${url})\n\n`;
-      set("content", draft.content.slice(0, at) + snippet + draft.content.slice(at));
+      placeImage(url);
     } catch (err) {
       setImageError(err instanceof Error ? err.message : "Falha no envio da imagem.");
+    } finally {
+      setImageBusy(false);
+    }
+  }
+
+  async function insertFramedImage(result: FramedImage) {
+    setImageBusy(true);
+    try {
+      const url = await uploadPostBlob(result.blob, result.extension, "inline");
+      setFraming(null);
+      placeImage(url);
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : "Falha no envio da imagem.");
+      setFraming(null);
     } finally {
       setImageBusy(false);
     }
@@ -641,6 +678,17 @@ export default function PostForm({
               placeholder="Escreva aqui. Use os botões acima para títulos, negrito, listas, links e imagens."
               className="field leading-relaxed text-[#111]"
             />
+            {framing && (
+              <ImageFramer
+                file={framing}
+                title="Enquadrar a imagem do texto"
+                options={INLINE_FORMATS}
+                outputWidth={1600}
+                confirmLabel="Inserir no texto"
+                onConfirm={insertFramedImage}
+                onCancel={() => setFraming(null)}
+              />
+            )}
             {imageError && (
               <span role="alert" className="text-xs font-medium text-red-800">
                 {imageError}

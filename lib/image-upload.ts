@@ -85,22 +85,40 @@ export async function prepareImage(file: File): Promise<PreparedImage> {
   };
 }
 
+// Envia uma imagem já pronta (por exemplo, enquadrada) e devolve o endereço público.
+export async function uploadPostBlob(
+  blob: Blob,
+  extension: string,
+  folder: "covers" | "inline",
+): Promise<string> {
+  const supabase = createClient();
+  const path = `${folder}/${crypto.randomUUID()}.${extension}`;
+  const { error } = await supabase.storage
+    .from("post-images")
+    .upload(path, blob, {
+      upsert: false,
+      contentType: blob.type || "image/webp",
+      cacheControl: "31536000",
+    });
+  if (error) throw new Error("Não foi possível enviar a imagem. Tente de novo.");
+  const { data } = supabase.storage.from("post-images").getPublicUrl(path);
+  return data.publicUrl;
+}
+
 // Envia para o armazenamento das matérias e devolve o endereço público.
 export async function uploadPostImage(
   file: File,
   folder: "covers" | "inline",
 ): Promise<{ url: string; image: PreparedImage }> {
   const image = await prepareImage(file);
-  const supabase = createClient();
-  const path = `${folder}/${crypto.randomUUID()}.${image.extension}`;
-  const { error } = await supabase.storage
-    .from("post-images")
-    .upload(path, image.blob, {
-      upsert: false,
-      contentType: image.blob.type || file.type,
-      cacheControl: "31536000",
-    });
-  if (error) throw new Error("Não foi possível enviar a imagem. Tente de novo.");
-  const { data } = supabase.storage.from("post-images").getPublicUrl(path);
-  return { url: data.publicUrl, image };
+  const url = await uploadPostBlob(image.blob, image.extension, folder);
+  return { url, image };
+}
+
+// Baixa uma imagem já publicada (para enquadrar de novo). O armazenamento aceita
+// leitura de qualquer endereço do site.
+export async function fetchImageBlob(url: string): Promise<Blob> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Não consegui abrir a foto atual.");
+  return response.blob();
 }

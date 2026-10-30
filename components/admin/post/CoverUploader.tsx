@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { uploadPostImage, type PreparedImage } from "@/lib/image-upload";
+import ImageFramer, { type FramedImage } from "@/components/ImageFramer";
+import {
+  fetchImageBlob,
+  MAX_RAW_BYTES,
+  uploadPostBlob,
+  uploadPostImage,
+  type PreparedImage,
+} from "@/lib/image-upload";
+import { isFramable } from "@/lib/site-image-keys";
 
 function formatBytes(bytes: number) {
   return bytes >= 1024 * 1024
@@ -21,8 +29,9 @@ export default function CoverUploader({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<PreparedImage | null>(null);
+  const [framing, setFraming] = useState<Blob | null>(null);
 
-  async function handleFile(file: File) {
+  async function sendAsIs(file: File) {
     setBusy(true);
     setError(null);
     setInfo(null);
@@ -37,16 +46,61 @@ export default function CoverUploader({
     }
   }
 
+  function handleFile(file: File) {
+    setError(null);
+    if (!isFramable(file)) {
+      void sendAsIs(file);
+      return;
+    }
+    if (file.size > MAX_RAW_BYTES) {
+      setError("A imagem passou de 20 MB. Escolha uma menor.");
+      return;
+    }
+    setFraming(file);
+  }
+
+  async function onFramed(result: FramedImage) {
+    const source = framing;
+    setBusy(true);
+    setError(null);
+    setInfo(null);
+    try {
+      const url = await uploadPostBlob(result.blob, result.extension, "covers");
+      onChange(url);
+      setInfo({
+        blob: result.blob,
+        extension: result.extension,
+        originalWidth: result.sourceWidth,
+        originalHeight: result.sourceHeight,
+        originalBytes: source?.size ?? result.blob.size,
+        finalBytes: result.blob.size,
+      });
+      setFraming(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Falha no envio da imagem.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function reframe() {
+    if (!value) return;
+    setBusy(true);
+    setError(null);
+    try {
+      setFraming(await fetchImageBlob(value));
+    } catch {
+      setError("Não consegui abrir a capa atual. Envie a foto de novo.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const warnings: string[] = [];
   if (info && info.originalWidth > 0) {
     if (info.originalWidth < 1200) {
       warnings.push(
         `A foto tem ${info.originalWidth} px de largura. Abaixo de 1200 px ela pode ficar embaçada em telas grandes.`,
-      );
-    }
-    if (info.originalHeight > info.originalWidth) {
-      warnings.push(
-        "A foto está em pé (retrato). Nas listas ela é cortada em formato paisagem; prefira uma foto deitada.",
       );
     }
   }
@@ -62,8 +116,8 @@ export default function CoverUploader({
       <div className="rounded-xl bg-sand-soft px-4 py-3 text-[13px] leading-relaxed text-body">
         <p>
           <b className="text-ink">Tamanho ideal: 1600 × 900 px</b> (foto deitada,
-          proporção 16:9). Aceita JPG, PNG ou WebP; o site reduz e otimiza
-          sozinho.
+          proporção 16:9). Ao escolher a foto, você <b className="text-ink">enquadra</b> antes
+          de enviar; o site reduz e otimiza sozinho.
         </p>
         <p className="mt-1.5">
           Deixe o assunto principal no <b className="text-ink">centro</b>: nas
@@ -103,6 +157,14 @@ export default function CoverUploader({
                 }}
               />
             </label>
+            <button
+              type="button"
+              onClick={() => void reframe()}
+              disabled={busy}
+              className="link-arrow disabled:opacity-50"
+            >
+              Enquadrar de novo
+            </button>
             <button
               type="button"
               onClick={() => {
@@ -151,6 +213,18 @@ export default function CoverUploader({
           {text}
         </p>
       ))}
+
+      {framing && (
+        <ImageFramer
+          file={framing}
+          title="Enquadrar a capa da matéria"
+          aspect={16 / 9}
+          outputWidth={1600}
+          confirmLabel="Usar como capa"
+          onConfirm={onFramed}
+          onCancel={() => setFraming(null)}
+        />
+      )}
 
       {error && (
         <p role="alert" className="text-xs font-medium text-red-800">

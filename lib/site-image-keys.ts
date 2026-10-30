@@ -27,3 +27,19 @@ export const siteImageKeys = Object.keys(siteImageMeta) as SiteImageKey[];
 export function isSiteImageKey(key: string): key is SiteImageKey {
   return key in siteImageMeta;
 }
+
+// Moldura de cada foto (a mesma proporção usada na página), para enquadrar ao enviar.
+export const siteImageFrames: Record<
+  SiteImageKey,
+  { aspect: number; shape: "rect" | "arch"; outputWidth: number; hint: string }
+> = {
+  hero: { aspect: 4 / 5, shape: "arch", outputWidth: 1200, hint: "Foto da abertura (em pé, em arco)" },
+  espaco: { aspect: 4 / 3, shape: "rect", outputWidth: 1600, hint: "Foto do nosso espaço (deitada)" },
+  sobre: { aspect: 5 / 4, shape: "rect", outputWidth: 1500, hint: "Foto da página Sobre nós" },
+  materia_padrao: { aspect: 16 / 10, shape: "rect", outputWidth: 1600, hint: "Capa padrão das matérias" },
+};
+
+// Fotos que não passam pelo enquadramento (GIF e SVG seguem como estão).
+export function isFramable(file: Blob): boolean {
+  return file.type.startsWith("image/") && file.type !== "image/gif" && file.type !== "image/svg+xml";
+}
