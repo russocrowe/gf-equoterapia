@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
-import { formatDate } from "@/lib/format";
 import { getPostBySlug, visibleCategory } from "@/lib/posts";
 import { jsonLd } from "@/lib/json-ld";
 import { getSiteImages } from "@/lib/public-data";
@@ -78,9 +77,6 @@ export default async function BlogPostPage({ params }: Props) {
             </h1>
             <p className="text-[1.1rem] leading-relaxed text-[#111]">
               {post.excerpt}
-            </p>
-            <p className="mt-5 text-xs text-muted">
-              {formatDate(post.published_at)}
             </p>
             {post.tags?.length > 0 && (
               <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Tags da matéria">

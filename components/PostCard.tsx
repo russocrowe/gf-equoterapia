@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
-import { formatDateShort } from "@/lib/format";
 import { visibleCategory, type Post } from "@/lib/posts";
 import { displayTags } from "@/lib/tags";
 
-// Cartão de matéria: foto com a data em etiqueta, tags coloridas, título e resumo.
+// Cartão de matéria: foto, tags coloridas, título e resumo (sem data).
 // O link do título cobre o cartão inteiro (um só link para teclado e leitor de tela).
 export default function PostCard({
   post,
@@ -37,9 +36,6 @@ export default function PostCard({
             label="Imagem em breve"
             className="aspect-[16/10] w-full !rounded-none !border-0"
           />
-        )}
-        {post.published_at && (
-          <span className="pc-date">{formatDateShort(post.published_at)}</span>
         )}
       </div>
 

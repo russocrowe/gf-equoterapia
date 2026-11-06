@@ -207,23 +207,6 @@
 
   .pc:hover .pc-cover img { transform: scale(1.04); }
 
-  .pc-date {
-    position: absolute;
-    left: 14px;
-    top: 14px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: var(--tone-bg, var(--butter));
-    color: var(--tone-ink, var(--navy));
-    font-family: var(--font-montserrat), sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    box-shadow: 0 8px 14px -8px rgb(0 2 89 / 0.5);
-  }
-
   .pc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
   .pc-tags span {

@@ -6,7 +6,6 @@ import PostCard from "@/components/PostCard";
 import Reveal from "@/components/Reveal";
 import WaveTop from "@/components/Wave";
 import T from "@/components/editor/T";
-import { formatDateShort } from "@/lib/format";
 import { getFeaturedPost, getPublishedPosts, visibleCategory } from "@/lib/posts";
 import { getSiteImages } from "@/lib/public-data";
 import { displayTags, tagKey } from "@/lib/tags";
@@ -105,9 +104,6 @@ export default async function EquoterapiaPage({ searchParams }: Props) {
                     label="Imagem em breve"
                     className="aspect-[3/2] h-full w-full !rounded-none !border-0"
                   />
-                )}
-                {featured.published_at && (
-                  <span className="pc-date tone-0">{formatDateShort(featured.published_at)}</span>
                 )}
               </Link>
               <div className="flex flex-col justify-center gap-4 p-8 lg:p-14">
